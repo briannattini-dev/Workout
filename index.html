@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d1b2a">
+<title>Morning Build</title>
+<style>
+  :root{
+    --bg:#0d1b2a;
+    --bg2:#13263b;
+    --surface:#1b3349;
+    --surface2:#21405b;
+    --line:#2d5274;
+    --ink:#eaf2fb;
+    --ink-dim:#9fb6cf;
+    --accent:#ff7a3c;       /* sunrise orange — the "morning" signature */
+    --accent2:#ffc15e;      /* warm highlight */
+    --cool:#4cc9f0;         /* cardio/cool */
+    --green:#5fd38a;
+    --radius:18px;
+    --radius-sm:12px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(120% 80% at 50% -10%, #1d3a57 0%, var(--bg) 55%) fixed;
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+    min-height:100vh;
+    padding:max(env(safe-area-inset-top),16px) 16px max(env(safe-area-inset-bottom),24px);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:520px;margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  header{padding:8px 4px 18px;}
+  .eyebrow{
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent2);font-weight:700;margin:0 0 6px;
+  }
+  h1{
+    margin:0;font-size:34px;line-height:1.02;font-weight:800;letter-spacing:-.02em;
+    background:linear-gradient(95deg,var(--accent2),var(--accent));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sub{color:var(--ink-dim);font-size:14px;margin:8px 2px 0;}
+
+  /* ---------- Cards ---------- */
+  .card{
+    background:linear-gradient(180deg,var(--surface),var(--bg2));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px;margin-bottom:14px;
+  }
+  .card h2{
+    margin:0 0 12px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-dim);font-weight:700;
+  }
+
+  /* ---------- Time picker ---------- */
+  .times{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  .chip{
+    appearance:none;border:1px solid var(--line);background:var(--surface2);
+    color:var(--ink);border-radius:var(--radius-sm);padding:14px 0;font-size:17px;
+    font-weight:700;cursor:pointer;transition:.15s;font-family:inherit;
+  }
+  .chip .u{display:block;font-size:11px;font-weight:600;color:var(--ink-dim);margin-top:2px;letter-spacing:.04em;}
+  .chip.active{
+    background:linear-gradient(180deg,var(--accent),#e95f24);
+    border-color:var(--accent);color:#1a0d05;
+  }
+  .chip.active .u{color:#3a1c0a;}
+  .custom-row{display:flex;gap:8px;margin-top:8px;align-items:center;}
+  .custom-row input{
+    flex:1;background:var(--surface2);border:1px solid var(--line);color:var(--ink);
+    border-radius:var(--radius-sm);padding:13px 14px;font-size:16px;font-family:inherit;
+  }
+  .custom-row input:focus{outline:none;border-color:var(--accent);}
+  .custom-row label{font-size:13px;color:var(--ink-dim);}
+
+  /* ---------- Focus picker ---------- */
+  .focus{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+  .fbtn{
+    appearance:none;border:1px solid var(--line);background:var(--surface2);
+    color:var(--ink);border-radius:var(--radius-sm);padding:12px;font-size:14px;
+    font-weight:600;cursor:pointer;transition:.15s;font-family:inherit;text-align:left;
+  }
+  .fbtn .ft{display:block;font-size:11px;color:var(--ink-dim);font-weight:500;margin-top:2px;}
+  .fbtn.active{background:var(--surface);border-color:var(--accent2);}
+  .fbtn.active .ck{color:var(--accent2);}
+  .fbtn .ck{float:right;color:transparent;font-weight:800;}
+
+  /* ---------- Build button ---------- */
+  .build{
+    width:100%;border:none;cursor:pointer;font-family:inherit;
+    background:linear-gradient(95deg,var(--accent),var(--accent2));
+    color:#1a0d05;font-size:19px;font-weight:800;letter-spacing:.01em;
+    padding:18px;border-radius:var(--radius);margin-top:2px;
+    box-shadow:0 8px 24px -8px var(--accent);transition:.15s;
+  }
+  .build:active{transform:translateY(1px);box-shadow:0 4px 14px -8px var(--accent);}
+
+  /* ---------- Workout output ---------- */
+  #out{margin-top:4px;}
+  .wo-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px;padding:0 2px;}
+  .wo-title{font-size:22px;font-weight:800;letter-spacing:-.01em;}
+  .wo-meta{font-size:13px;color:var(--ink-dim);text-align:right;line-height:1.4;}
+
+  .block{margin-bottom:14px;}
+  .block-label{
+    display:flex;align-items:center;gap:8px;margin:0 2px 8px;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
+  }
+  .block-label .dot{width:8px;height:8px;border-radius:50%;}
+  .b-warm .dot{background:var(--accent2);} .b-warm{color:var(--accent2);}
+  .b-main .dot{background:var(--accent);}  .b-main{color:var(--accent);}
+  .b-cool .dot{background:var(--cool);}    .b-cool{color:var(--cool);}
+
+  .ex{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:13px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;
+  }
+  .ex .n{font-size:15px;font-weight:700;flex:1;line-height:1.25;}
+  .ex .n small{display:block;font-weight:500;color:var(--ink-dim);font-size:12.5px;margin-top:3px;line-height:1.4;}
+  .ex .pill{
+    font-size:12px;font-weight:700;white-space:nowrap;padding:6px 10px;border-radius:999px;
+    background:var(--surface2);color:var(--ink-dim);
+  }
+  .ex .pill.cardio{background:rgba(76,201,240,.16);color:var(--cool);}
+  .ex .pill.lift{background:rgba(255,122,60,.16);color:var(--accent);}
+  .ex .pill.mob{background:rgba(255,193,94,.16);color:var(--accent2);}
+
+  .empty{color:var(--ink-dim);text-align:center;padding:30px 10px;font-size:15px;line-height:1.5;}
+  .empty .big{font-size:40px;display:block;margin-bottom:10px;}
+
+  .foot{text-align:center;color:var(--ink-dim);font-size:12px;margin-top:20px;line-height:1.6;}
+  .rebuild{
+    width:100%;background:var(--surface2);border:1px solid var(--line);color:var(--ink);
+    font-family:inherit;font-size:15px;font-weight:700;padding:14px;border-radius:var(--radius);
+    cursor:pointer;margin-top:6px;
+  }
+  .rebuild:active{background:var(--surface);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Daily Strength · Built for your sports</p>
+    <h1>Morning Build</h1>
+    <p class="sub">Tap your time, build a workout. Strength + cardio for snowboarding, basketball, skating &amp; bodyboarding.</p>
+  </header>
+
+  <div class="card">
+    <h2>How long this morning?</h2>
+    <div class="times" id="times">
+      <button class="chip" data-min="15">15<span class="u">min</span></button>
+      <button class="chip active" data-min="30">30<span class="u">min</span></button>
+      <button class="chip" data-min="45">45<span class="u">min</span></button>
+      <button class="chip" data-min="60">60<span class="u">min</span></button>
+    </div>
+    <div class="custom-row">
+      <label>Custom:</label>
+      <input id="custom" type="number" inputmode="numeric" min="10" max="120" placeholder="e.g. 25 min">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Focus <span style="text-transform:none;letter-spacing:0;font-weight:500;">(or let it rotate)</span></h2>
+    <div class="focus" id="focus">
+      <button class="fbtn active" data-focus="auto"><span class="ck">✓</span>Auto-rotate<span class="ft">Smart pick based on last session</span></button>
+      <button class="fbtn" data-focus="full"><span class="ck">✓</span>Full body<span class="ft">A bit of everything</span></button>
+      <button class="fbtn" data-focus="push"><span class="ck">✓</span>Push<span class="ft">Chest, shoulders, triceps</span></button>
+      <button class="fbtn" data-focus="pull"><span class="ck">✓</span>Pull + core<span class="ft">Back, biceps, midsection</span></button>
+      <button class="fbtn" data-focus="legs"><span class="ck">✓</span>Legs + power<span class="ft">Glutes, quads, explosiveness</span></button>
+      <button class="fbtn" data-focus="cardio"><span class="ck">✓</span>Cardio + core<span class="ft">Treadmill-forward, lighter lift</span></button>
+    </div>
+  </div>
+
+  <button class="build" id="build">Build my workout</button>
+
+  <div id="out">
+    <div class="empty">
+      <span class="big">🌅</span>
+      Pick a time and tap <b>Build my workout</b>.<br>Your session will appear here.
+    </div>
+  </div>
+
+  <p class="foot">
+    Equipment assumed: treadmill (incline 0–12, speed 0–4), dumbbell pairs 5–50 lb,
+    weighted vest 0–40 lb, bench.<br>
+    Rotation is remembered on this phone. Listen to your body — skip or swap anything that hurts.
+  </p>
+</div>
+
+<script>
+/* ============================================================
+   MORNING BUILD — built-in workout logic (no internet needed)
+   ------------------------------------------------------------
+   Structure is split so PHASE 2 (exercise-level tracking) drops
+   in cleanly later:
+     • LIBRARY   — every exercise, tagged by focus + type
+     • CARDIO    — the "filler" moves done between strength sets
+     • generate()— assembles warm-up / main / cooldown to fit time
+     • storage   — remembers last focus so auto-rotate works
+   ============================================================ */
+
+/* ---------- 1. EXERCISE LIBRARY ----------
+   type: lift | cardio | mob (mobility/stretch)
+   focus: which day(s) it belongs to
+   sport: optional note tying it to your activities
+   load:  how to scale with your dumbbells/vest                  */
+const LIBRARY = [
+  // ---- PUSH ----
+  {name:"Dumbbell bench press", type:"lift", focus:["push","full"], sport:"Pushing power for basketball & paddling", scheme:"4 × 8–10", load:"Pick a pair you fail near rep 10 (try 25–35 lb)"},
+  {name:"Standing overhead press", type:"lift", focus:["push","full"], sport:"Shoulder strength for bodyboard paddling", scheme:"3 × 8–10", load:"15–25 lb pair"},
+  {name:"Incline DB press (bench raised on books/blocks or seat-back)", type:"lift", focus:["push"], scheme:"3 × 10", load:"20–30 lb pair"},
+  {name:"Push-ups (feet on bench = harder)", type:"lift", focus:["push","full"], sport:"Pop-up strength for bodyboarding", scheme:"3 × max", load:"Add weighted vest 10–20 lb to progress"},
+  {name:"DB floor / bench fly", type:"lift", focus:["push"], scheme:"3 × 12", load:"10–15 lb pair"},
+  {name:"Triceps overhead extension", type:"lift", focus:["push"], scheme:"3 × 12", load:"15–25 lb (one bell, both hands)"},
+
+  // ---- PULL + CORE ----
+  {name:"One-arm DB row (knee on bench)", type:"lift", focus:["pull","full"], sport:"Back strength for paddling & carving", scheme:"4 × 10 each side", load:"25–40 lb"},
+  {name:"Bent-over two-DB row", type:"lift", focus:["pull","full"], scheme:"3 × 10", load:"20–30 lb pair"},
+  {name:"DB pullover (lying on bench)", type:"lift", focus:["pull"], scheme:"3 × 12", load:"20–30 lb"},
+  {name:"DB biceps curl", type:"lift", focus:["pull"], scheme:"3 × 12", load:"15–25 lb pair"},
+  {name:"Hammer curl", type:"lift", focus:["pull"], scheme:"3 × 12", load:"15–20 lb pair"},
+  {name:"Plank", type:"lift", focus:["pull","full","cardio"], sport:"Core stability for every board sport", scheme:"3 × 45–60 sec", load:"Vest 10–25 lb to progress"},
+  {name:"Russian twists", type:"lift", focus:["pull","cardio"], sport:"Rotational power for snowboarding & skating", scheme:"3 × 20 twists", load:"Hold one 10–20 lb bell"},
+  {name:"Hanging-style knee tuck on bench", type:"lift", focus:["pull","cardio"], scheme:"3 × 15", load:"Bodyweight"},
+
+  // ---- LEGS + POWER ----
+  {name:"Goblet squat", type:"lift", focus:["legs","full"], sport:"The base for snowboarding & basketball", scheme:"4 × 10–12", load:"Hold one 30–50 lb bell"},
+  {name:"DB reverse lunge", type:"lift", focus:["legs","full"], sport:"Single-leg balance for skating & carving", scheme:"3 × 10 each", load:"20–35 lb pair"},
+  {name:"Bulgarian split squat (rear foot on bench)", type:"lift", focus:["legs"], sport:"Snowboard leg endurance", scheme:"3 × 8 each", load:"15–30 lb pair"},
+  {name:"DB Romanian deadlift", type:"lift", focus:["legs","pull"], sport:"Hamstring/back chain for pop & paddling", scheme:"4 × 10", load:"30–50 lb pair"},
+  {name:"Step-ups onto bench", type:"lift", focus:["legs","cardio"], scheme:"3 × 12 each", load:"20–35 lb pair or vest"},
+  {name:"Box / bench jumps (step down)", type:"cardio", focus:["legs","cardio","full"], sport:"Explosive pop for ollies & rebounds", scheme:"3 × 8", load:"Bodyweight — land soft"},
+  {name:"Calf raises off bench edge", type:"lift", focus:["legs"], scheme:"3 × 20", load:"Hold 25–40 lb"},
+  {name:"Wall sit", type:"lift", focus:["legs","cardio"], sport:"Snowboard burn tolerance", scheme:"3 × 45 sec", load:"Vest 10–25 lb to progress"},
+
+  // ---- MOBILITY / WARM-UP / COOLDOWN ----
+  {name:"Treadmill brisk walk, incline 4–6, speed 3", type:"cardio", focus:["warm"], scheme:"3–4 min", load:""},
+  {name:"Leg swings + arm circles", type:"mob", focus:["warm"], scheme:"1 min", load:""},
+  {name:"World's greatest stretch", type:"mob", focus:["warm","cool"], scheme:"5 each side", load:""},
+  {name:"Bodyweight squat to stand", type:"mob", focus:["warm"], scheme:"10 reps", load:""},
+  {name:"Cat–cow + thoracic rotations", type:"mob", focus:["cool","warm"], scheme:"8 each", load:""},
+  {name:"Couch / hip-flexor stretch", type:"mob", focus:["cool"], scheme:"45 sec each", load:""},
+  {name:"Downward dog → cobra flow", type:"mob", focus:["cool"], scheme:"5 slow rounds", load:""},
+  {name:"Seated forward fold + hamstring stretch", type:"mob", focus:["cool"], scheme:"45 sec", load:""},
+  {name:"Pigeon pose", type:"mob", focus:["cool"], sport:"Hips for snowboard stance", scheme:"45 sec each", load:""},
+  {name:"Child's pose + deep breathing", type:"mob", focus:["cool"], scheme:"1 min", load:""},
+];
+
+/* ---------- 2. CARDIO FILLERS (between strength sets) ---------- */
+const CARDIO = [
+  {name:"Jumping jacks", scheme:"30 sec"},
+  {name:"Treadmill sprint-walk: incline 8, speed 3.5", scheme:"45 sec", note:"step to the rails to start/stop"},
+  {name:"Mountain climbers", scheme:"30 sec"},
+  {name:"High knees in place", scheme:"30 sec"},
+  {name:"Treadmill incline 12 power walk", scheme:"1 min"},
+  {name:"Skater hops (lateral)", scheme:"30 sec", note:"great for snowboard & skate balance"},
+  {name:"Burpees", scheme:"30 sec"},
+  {name:"Speed squat pulses", scheme:"30 sec"},
+];
+
+/* ---------- 3. STATE ---------- */
+let selMin = 30;
+let selFocus = "auto";
+const ROTATION = ["push","pull","legs","cardio"]; // auto-rotate order
+
+/* ---------- storage (remembers last focus) ---------- */
+function lastFocus(){ try{return localStorage.getItem("mb_lastFocus");}catch(e){return null;} }
+function saveFocus(f){ try{localStorage.setItem("mb_lastFocus",f);}catch(e){} }
+
+function resolveFocus(){
+  if(selFocus !== "auto") return selFocus;
+  const prev = lastFocus();
+  if(!prev) return "full";                         // first ever session
+  const i = ROTATION.indexOf(prev);
+  return ROTATION[(i + 1) % ROTATION.length];      // next in rotation
+}
+
+/* ---------- helpers ---------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pick(arr,n){return shuffle(arr).slice(0,n);}
+function typePill(t){
+  if(t==="cardio")return '<span class="pill cardio">Cardio</span>';
+  if(t==="mob")return '<span class="pill mob">Mobility</span>';
+  return '<span class="pill lift">Strength</span>';
+}
+
+/* ---------- 4. GENERATOR ---------- */
+function generate(){
+  const focus = resolveFocus();
+  const min = selMin;
+
+  // How many main strength moves fit the time budget?
+  // Warm-up ~ (min<=20?3:5) min, cooldown ~ (min<=20?3:6) min.
+  // Each strength move w/ a cardio filler ≈ 6 min.
+  const warmMin = min<=20?3:5;
+  const coolMin = min<=20?3:6;
+  let mainMin = Math.max(min - warmMin - coolMin, 6);
+  let mainCount = Math.max(2, Math.round(mainMin/6));
+  mainCount = Math.min(mainCount, 7);
+
+  // ----- warm-up -----
+  const warmPool = LIBRARY.filter(e=>e.focus.includes("warm"));
+  const warm = pick(warmPool, min<=20?2:3);
+  // always lead with treadmill walk if present
+  const walk = warmPool.find(e=>e.name.startsWith("Treadmill"));
+  if(walk && !warm.includes(walk)){ warm.unshift(walk); warm.pop(); }
+
+  // ----- main strength (focus-matched, falls back to full) -----
+  let mainPool = LIBRARY.filter(e=>e.type!=="mob" && e.focus.includes(focus));
+  if(mainPool.length < mainCount){
+    const extra = LIBRARY.filter(e=>e.type!=="mob" && e.focus.includes("full") && !mainPool.includes(e));
+    mainPool = mainPool.concat(extra);
+  }
+  const main = pick(mainPool, Math.min(mainCount, mainPool.length));
+
+  // ----- cooldown -----
+  const coolPool = LIBRARY.filter(e=>e.focus.includes("cool"));
+  const cool = pick(coolPool, min<=20?2:4);
+
+  saveFocus(focus);
+  render({focus,min,warm,main,cool,mainCount});
+}
+
+/* ---------- 5. RENDER ---------- */
+const FOCUS_LABEL = {push:"Push day",pull:"Pull + core",legs:"Legs + power",cardio:"Cardio + core",full:"Full body"};
+
+function exRow(e, withFiller){
+  const sport = e.sport ? `<small>↳ ${e.sport}</small>` : "";
+  const load = e.load ? `<small>${e.load}</small>` : "";
+  let html = `<div class="ex">
+      <div class="n">${e.name}${sport}${load}</div>
+      <div style="text-align:right">
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px">${e.scheme||""}</div>
+        ${typePill(e.type)}
+      </div>
+    </div>`;
+  if(withFiller){
+    const f = pick(CARDIO,1)[0];
+    const note = f.note?` <small style="color:var(--ink-dim)">(${f.note})</small>`:"";
+    html += `<div class="ex" style="border-style:dashed;opacity:.92">
+        <div class="n" style="font-weight:600">↻ Between sets: ${f.name}${note}</div>
+        <div style="text-align:right">
+          <div style="font-size:13px;font-weight:700;margin-bottom:6px">${f.scheme}</div>
+          ${typePill("cardio")}
+        </div>
+      </div>`;
+  }
+  return html;
+}
+
+function render(w){
+  const out = document.getElementById("out");
+  const total = w.min;
+  let html = `
+    <div class="wo-head">
+      <div class="wo-title">${FOCUS_LABEL[w.focus]}</div>
+      <div class="wo-meta">${total} min · ${w.main.length} main moves<br>${new Date().toLocaleDateString(undefined,{weekday:'long'})}</div>
+    </div>
+
+    <div class="block">
+      <div class="block-label b-warm"><span class="dot"></span>Warm-up</div>
+      ${w.warm.map(e=>exRow(e,false)).join("")}
+    </div>
+
+    <div class="block">
+      <div class="block-label b-main"><span class="dot"></span>Main · strength + cardio</div>
+      ${w.main.map((e,i)=>exRow(e, i < w.main.length-0)).join("")}
+    </div>
+
+    <div class="block">
+      <div class="block-label b-cool"><span class="dot"></span>Cooldown · stretch &amp; breathe</div>
+      ${w.cool.map(e=>exRow(e,false)).join("")}
+    </div>
+
+    <button class="rebuild" id="rebuild">↻ Build a different one</button>
+  `;
+  out.innerHTML = html;
+  document.getElementById("rebuild").addEventListener("click",()=>{generate();window.scrollTo({top:0,behavior:'smooth'});});
+  out.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ---------- 6. WIRE UP UI ---------- */
+document.getElementById("times").addEventListener("click",e=>{
+  const b = e.target.closest(".chip"); if(!b)return;
+  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+  b.classList.add("active");
+  selMin = parseInt(b.dataset.min,10);
+  document.getElementById("custom").value="";
+});
+document.getElementById("custom").addEventListener("input",e=>{
+  const v = parseInt(e.target.value,10);
+  if(v && v>=10){
+    selMin = Math.min(v,120);
+    document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+  }
+});
+document.getElementById("focus").addEventListener("click",e=>{
+  const b = e.target.closest(".fbtn"); if(!b)return;
+  document.querySelectorAll(".fbtn").forEach(c=>c.classList.remove("active"));
+  b.classList.add("active");
+  selFocus = b.dataset.focus;
+});
+document.getElementById("build").addEventListener("click",generate);
+</script>
+</body>
+</html>
