@@ -5,214 +5,416 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0d1b2a">
-<title>Morning Build</title>
+<meta name="theme-color" content="#05070a">
+<title>Daily · Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0d1b2a;
-    --bg2:#13263b;
-    --surface:#1b3349;
-    --surface2:#21405b;
-    --line:#2d5274;
-    --ink:#eaf2fb;
-    --ink-dim:#9fb6cf;
-    --accent:#ff7a3c;       /* sunrise orange — the "morning" signature */
-    --accent2:#ffc15e;      /* warm highlight */
-    --cool:#4cc9f0;         /* cardio/cool */
-    --green:#5fd38a;
-    --radius:18px;
-    --radius-sm:12px;
-  }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
-    background:
-      radial-gradient(120% 80% at 50% -10%, #1d3a57 0%, var(--bg) 55%) fixed;
-    color:var(--ink);
+    background:#05070a;
+    color:#eaf2fb;
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
     min-height:100vh;
-    padding:max(env(safe-area-inset-top),16px) 16px max(env(safe-area-inset-bottom),24px);
+  }
+
+  /* ---------- Tab bar ---------- */
+  .tabbar{
+    position:sticky;top:0;z-index:50;
+    display:flex;gap:4px;
+    background:#11151c;
+    border-bottom:1px solid #232936;
+    padding:max(env(safe-area-inset-top),10px) 8px 8px;
+  }
+  .tabbtn{
+    flex:1;appearance:none;border:none;background:transparent;color:#8b93a3;
+    font-family:inherit;font-size:12.5px;font-weight:700;
+    padding:9px 4px 8px;border-radius:10px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+  }
+  .tabbtn .icon{font-size:19px;line-height:1;}
+  .tabbtn.active{background:#1c2230;color:#fff;}
+
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+</style>
+
+<!-- ========================================================= -->
+<!-- WORKOUT TAB STYLES                                         -->
+<!-- ========================================================= -->
+<style>
+  #tab-workout{
+    --wo-bg:#0d1b2a; --wo-bg2:#13263b; --wo-surface:#1b3349; --wo-surface2:#21405b;
+    --wo-line:#2d5274; --wo-ink:#eaf2fb; --wo-ink-dim:#9fb6cf;
+    --wo-accent:#ff7a3c; --wo-accent2:#ffc15e; --wo-cool:#4cc9f0; --wo-green:#5fd38a;
+    --wo-radius:18px; --wo-radius-sm:12px;
+    background:radial-gradient(120% 80% at 50% -10%, #1d3a57 0%, var(--wo-bg) 55%) fixed;
+    color:var(--wo-ink);
+    padding:18px 16px max(env(safe-area-inset-bottom),24px);
     -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:520px;margin:0 auto;}
+  #tab-workout .wo-wrap{max-width:520px;margin:0 auto;}
+  #tab-workout header{padding:8px 4px 18px;}
+  #tab-workout .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--wo-accent2);font-weight:700;margin:0 0 6px;}
+  #tab-workout h1{margin:0;font-size:34px;line-height:1.02;font-weight:800;letter-spacing:-.02em;
+    background:linear-gradient(95deg,var(--wo-accent2),var(--wo-accent));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  #tab-workout .sub{color:var(--wo-ink-dim);font-size:14px;margin:8px 2px 0;}
 
-  /* ---------- Header ---------- */
-  header{padding:8px 4px 18px;}
-  .eyebrow{
-    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
-    color:var(--accent2);font-weight:700;margin:0 0 6px;
-  }
-  h1{
-    margin:0;font-size:34px;line-height:1.02;font-weight:800;letter-spacing:-.02em;
-    background:linear-gradient(95deg,var(--accent2),var(--accent));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .sub{color:var(--ink-dim);font-size:14px;margin:8px 2px 0;}
+  #tab-workout .wo-card{background:linear-gradient(180deg,var(--wo-surface),var(--wo-bg2));
+    border:1px solid var(--wo-line);border-radius:var(--wo-radius);padding:18px;margin-bottom:14px;}
+  #tab-workout .wo-card h2{margin:0 0 12px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--wo-ink-dim);font-weight:700;}
 
-  /* ---------- Cards ---------- */
-  .card{
-    background:linear-gradient(180deg,var(--surface),var(--bg2));
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:18px;margin-bottom:14px;
-  }
-  .card h2{
-    margin:0 0 12px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--ink-dim);font-weight:700;
-  }
+  #tab-workout .wo-toggle{width:100%;text-align:left;display:flex;align-items:center;gap:10px;
+    background:var(--wo-surface2);border:1px solid var(--wo-line);color:var(--wo-ink);
+    padding:13px 14px;border-radius:var(--wo-radius-sm);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+  #tab-workout .wo-toggle .dot{width:9px;height:9px;border-radius:50%;background:var(--wo-ink-dim);flex-shrink:0;}
+  #tab-workout .wo-toggle.active{border-color:var(--wo-accent2);background:rgba(255,193,94,.12);}
+  #tab-workout .wo-toggle.active .dot{background:var(--wo-accent2);}
 
-  /* ---------- Time picker ---------- */
-  .times{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-  .chip{
-    appearance:none;border:1px solid var(--line);background:var(--surface2);
-    color:var(--ink);border-radius:var(--radius-sm);padding:14px 0;font-size:17px;
-    font-weight:700;cursor:pointer;transition:.15s;font-family:inherit;
-  }
-  .chip .u{display:block;font-size:11px;font-weight:600;color:var(--ink-dim);margin-top:2px;letter-spacing:.04em;}
-  .chip.active{
-    background:linear-gradient(180deg,var(--accent),#e95f24);
-    border-color:var(--accent);color:#1a0d05;
-  }
-  .chip.active .u{color:#3a1c0a;}
-  .custom-row{display:flex;gap:8px;margin-top:8px;align-items:center;}
-  .custom-row input{
-    flex:1;background:var(--surface2);border:1px solid var(--line);color:var(--ink);
-    border-radius:var(--radius-sm);padding:13px 14px;font-size:16px;font-family:inherit;
-  }
-  .custom-row input:focus{outline:none;border-color:var(--accent);}
-  .custom-row label{font-size:13px;color:var(--ink-dim);}
+  #tab-workout .wo-times{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  #tab-workout .wo-chip{appearance:none;border:1px solid var(--wo-line);background:var(--wo-surface2);
+    color:var(--wo-ink);border-radius:var(--wo-radius-sm);padding:14px 0;font-size:17px;
+    font-weight:700;cursor:pointer;transition:.15s;font-family:inherit;}
+  #tab-workout .wo-chip .u{display:block;font-size:11px;font-weight:600;color:var(--wo-ink-dim);margin-top:2px;letter-spacing:.04em;}
+  #tab-workout .wo-chip.active{background:linear-gradient(180deg,var(--wo-accent),#e95f24);border-color:var(--wo-accent);color:#1a0d05;}
+  #tab-workout .wo-chip.active .u{color:#3a1c0a;}
+  #tab-workout .wo-custom-row{display:flex;gap:8px;margin-top:8px;align-items:center;}
+  #tab-workout .wo-custom-row input{flex:1;background:var(--wo-surface2);border:1px solid var(--wo-line);color:var(--wo-ink);
+    border-radius:var(--wo-radius-sm);padding:13px 14px;font-size:16px;font-family:inherit;}
+  #tab-workout .wo-custom-row input:focus{outline:none;border-color:var(--wo-accent);}
+  #tab-workout .wo-custom-row label{font-size:13px;color:var(--wo-ink-dim);}
 
-  /* ---------- Focus picker ---------- */
-  .focus{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-  .fbtn{
-    appearance:none;border:1px solid var(--line);background:var(--surface2);
-    color:var(--ink);border-radius:var(--radius-sm);padding:12px;font-size:14px;
-    font-weight:600;cursor:pointer;transition:.15s;font-family:inherit;text-align:left;
-  }
-  .fbtn .ft{display:block;font-size:11px;color:var(--ink-dim);font-weight:500;margin-top:2px;}
-  .fbtn.active{background:var(--surface);border-color:var(--accent2);}
-  .fbtn.active .ck{color:var(--accent2);}
-  .fbtn .ck{float:right;color:transparent;font-weight:800;}
+  #tab-workout .wo-focus{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+  #tab-workout .wo-fbtn{appearance:none;border:1px solid var(--wo-line);background:var(--wo-surface2);
+    color:var(--wo-ink);border-radius:var(--wo-radius-sm);padding:12px;font-size:14px;
+    font-weight:600;cursor:pointer;transition:.15s;font-family:inherit;text-align:left;}
+  #tab-workout .wo-fbtn .ft{display:block;font-size:11px;color:var(--wo-ink-dim);font-weight:500;margin-top:2px;}
+  #tab-workout .wo-fbtn.active{background:var(--wo-surface);border-color:var(--wo-accent2);}
+  #tab-workout .wo-fbtn.active .ck{color:var(--wo-accent2);}
+  #tab-workout .wo-fbtn .ck{float:right;color:transparent;font-weight:800;}
 
-  /* ---------- Build button ---------- */
-  .build{
-    width:100%;border:none;cursor:pointer;font-family:inherit;
-    background:linear-gradient(95deg,var(--accent),var(--accent2));
+  #tab-workout .wo-build{width:100%;border:none;cursor:pointer;font-family:inherit;
+    background:linear-gradient(95deg,var(--wo-accent),var(--wo-accent2));
     color:#1a0d05;font-size:19px;font-weight:800;letter-spacing:.01em;
-    padding:18px;border-radius:var(--radius);margin-top:2px;
-    box-shadow:0 8px 24px -8px var(--accent);transition:.15s;
-  }
-  .build:active{transform:translateY(1px);box-shadow:0 4px 14px -8px var(--accent);}
+    padding:18px;border-radius:var(--wo-radius);margin-top:2px;
+    box-shadow:0 8px 24px -8px var(--wo-accent);transition:.15s;}
+  #tab-workout .wo-build:active{transform:translateY(1px);box-shadow:0 4px 14px -8px var(--wo-accent);}
 
-  /* ---------- Workout output ---------- */
-  #out{margin-top:4px;}
-  .wo-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px;padding:0 2px;}
-  .wo-title{font-size:22px;font-weight:800;letter-spacing:-.01em;}
-  .wo-meta{font-size:13px;color:var(--ink-dim);text-align:right;line-height:1.4;}
+  #tab-workout #wo-out{margin-top:4px;}
+  #tab-workout .wo-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px;padding:0 2px;}
+  #tab-workout .wo-title{font-size:22px;font-weight:800;letter-spacing:-.01em;}
+  #tab-workout .wo-meta{font-size:13px;color:var(--wo-ink-dim);text-align:right;line-height:1.4;}
 
-  .block{margin-bottom:14px;}
-  .block-label{
-    display:flex;align-items:center;gap:8px;margin:0 2px 8px;
-    font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
-  }
-  .block-label .dot{width:8px;height:8px;border-radius:50%;}
-  .b-warm .dot{background:var(--accent2);} .b-warm{color:var(--accent2);}
-  .b-main .dot{background:var(--accent);}  .b-main{color:var(--accent);}
-  .b-cool .dot{background:var(--cool);}    .b-cool{color:var(--cool);}
+  #tab-workout .wo-block{margin-bottom:14px;}
+  #tab-workout .wo-block-label{display:flex;align-items:center;gap:8px;margin:0 2px 8px;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;}
+  #tab-workout .wo-block-label .dot{width:8px;height:8px;border-radius:50%;}
+  #tab-workout .b-warm .dot{background:var(--wo-accent2);} #tab-workout .b-warm{color:var(--wo-accent2);}
+  #tab-workout .b-main .dot{background:var(--wo-accent);}  #tab-workout .b-main{color:var(--wo-accent);}
+  #tab-workout .b-cool .dot{background:var(--wo-cool);}    #tab-workout .b-cool{color:var(--wo-cool);}
 
-  .ex{
-    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
-    padding:13px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;
-  }
-  .ex .n{font-size:15px;font-weight:700;flex:1;line-height:1.25;}
-  .ex .n small{display:block;font-weight:500;color:var(--ink-dim);font-size:12.5px;margin-top:3px;line-height:1.4;}
-  .ex .pill{
-    font-size:12px;font-weight:700;white-space:nowrap;padding:6px 10px;border-radius:999px;
-    background:var(--surface2);color:var(--ink-dim);
-  }
-  .ex .pill.cardio{background:rgba(76,201,240,.16);color:var(--cool);}
-  .ex .pill.lift{background:rgba(255,122,60,.16);color:var(--accent);}
-  .ex .pill.mob{background:rgba(255,193,94,.16);color:var(--accent2);}
+  #tab-workout .wo-ex{background:var(--wo-surface);border:1px solid var(--wo-line);border-radius:var(--wo-radius-sm);
+    padding:13px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;}
+  #tab-workout .wo-ex .n{font-size:15px;font-weight:700;flex:1;line-height:1.25;}
+  #tab-workout .wo-ex .n small{display:block;font-weight:500;color:var(--wo-ink-dim);font-size:12.5px;margin-top:3px;line-height:1.4;}
+  #tab-workout .wo-ex .pill{font-size:12px;font-weight:700;white-space:nowrap;padding:6px 10px;border-radius:999px;
+    background:var(--wo-surface2);color:var(--wo-ink-dim);}
+  #tab-workout .wo-ex .pill.cardio{background:rgba(76,201,240,.16);color:var(--wo-cool);}
+  #tab-workout .wo-ex .pill.lift{background:rgba(255,122,60,.16);color:var(--wo-accent);}
+  #tab-workout .wo-ex .pill.mob{background:rgba(255,193,94,.16);color:var(--wo-accent2);}
 
-  .empty{color:var(--ink-dim);text-align:center;padding:30px 10px;font-size:15px;line-height:1.5;}
-  .empty .big{font-size:40px;display:block;margin-bottom:10px;}
+  #tab-workout .wo-empty{color:var(--wo-ink-dim);text-align:center;padding:30px 10px;font-size:15px;line-height:1.5;}
+  #tab-workout .wo-empty .big{font-size:40px;display:block;margin-bottom:10px;}
 
-  .foot{text-align:center;color:var(--ink-dim);font-size:12px;margin-top:20px;line-height:1.6;}
-  .rebuild{
-    width:100%;background:var(--surface2);border:1px solid var(--line);color:var(--ink);
-    font-family:inherit;font-size:15px;font-weight:700;padding:14px;border-radius:var(--radius);
-    cursor:pointer;margin-top:6px;
+  #tab-workout .wo-foot{text-align:center;color:var(--wo-ink-dim);font-size:12px;margin-top:20px;line-height:1.6;}
+  #tab-workout .wo-rebuild{width:100%;background:var(--wo-surface2);border:1px solid var(--wo-line);color:var(--wo-ink);
+    font-family:inherit;font-size:15px;font-weight:700;padding:14px;border-radius:var(--wo-radius);cursor:pointer;margin-top:6px;}
+  #tab-workout .wo-rebuild:active{background:var(--wo-surface);}
+</style>
+
+<!-- ========================================================= -->
+<!-- GUITAR TAB STYLES                                          -->
+<!-- ========================================================= -->
+<style>
+  #tab-guitar{
+    --gt-bg:#20160f; --gt-panel:#2d2015; --gt-panel-2:#362719; --gt-brass:#c9a227;
+    --gt-brass-soft:#e4c567; --gt-parchment:#ede1cb; --gt-muted:#b3a186; --gt-rust:#a2472b; --gt-line:#4a3826;
+    background:radial-gradient(circle at 15% 0%, #2c2013 0%, transparent 55%),
+      radial-gradient(circle at 85% 100%, #241a10 0%, transparent 55%), var(--gt-bg);
+    color:var(--gt-parchment);
+    font-family:'Karla',sans-serif;
+    padding:0 0 40px;
   }
-  .rebuild:active{background:var(--surface);}
+  #tab-guitar .gt-header{padding:22px 20px 16px;border-bottom:1px solid var(--gt-line);}
+  #tab-guitar .eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gt-brass-soft);margin:0 0 6px;}
+  #tab-guitar h1{font-family:'Spectral',serif;font-weight:700;font-size:30px;margin:0 0 6px;letter-spacing:.01em;}
+  #tab-guitar .gt-tagline{color:var(--gt-muted);font-size:14px;margin:0;max-width:32em;}
+  #tab-guitar main{padding:20px 20px 0;max-width:560px;margin:0 auto;}
+
+  #tab-guitar .gcard-controls{background:var(--gt-panel);border:1px solid var(--gt-line);border-radius:14px;padding:18px;margin-bottom:20px;}
+  #tab-guitar .gcard-controls label{display:block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gt-muted);margin-bottom:8px;}
+  #tab-guitar .minute-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  #tab-guitar .gchip{font-family:'Space Mono',monospace;font-size:13px;background:var(--gt-panel-2);border:1px solid var(--gt-line);
+    color:var(--gt-parchment);padding:8px 14px;border-radius:999px;cursor:pointer;transition:background .15s,border-color .15s;}
+  #tab-guitar .gchip:hover{border-color:var(--gt-brass);}
+  #tab-guitar .gchip.active{background:var(--gt-brass);border-color:var(--gt-brass);color:#20160f;font-weight:700;}
+  #tab-guitar .custom-minutes{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+  #tab-guitar .custom-minutes input{width:70px;background:var(--gt-panel-2);border:1px solid var(--gt-line);color:var(--gt-parchment);
+    font-family:'Space Mono',monospace;font-size:14px;padding:8px 10px;border-radius:8px;}
+  #tab-guitar .custom-minutes span{color:var(--gt-muted);font-size:13px;}
+  #tab-guitar button.gt-generate{width:100%;background:var(--gt-brass);color:#20160f;border:none;border-radius:10px;
+    padding:14px;font-family:'Karla',sans-serif;font-weight:700;font-size:15.5px;cursor:pointer;transition:filter .15s;}
+  #tab-guitar button.gt-generate:hover{filter:brightness(1.08);}
+
+  #tab-guitar .badge{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:11.5px;
+    letter-spacing:.06em;text-transform:uppercase;background:var(--gt-rust);color:var(--gt-parchment);
+    padding:6px 12px;border-radius:999px;margin-bottom:18px;}
+  #tab-guitar .badge::before{content:"●";color:var(--gt-brass-soft);font-size:9px;}
+
+  #tab-guitar .gcard{background:var(--gt-panel);border:1px solid var(--gt-line);border-radius:14px;padding:18px 18px 20px;margin-bottom:14px;}
+  #tab-guitar .gcard.spotlight{border-color:var(--gt-brass);box-shadow:0 0 0 1px rgba(201,162,39,.25) inset;}
+  #tab-guitar .card-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:10px;}
+  #tab-guitar .card-head h2{font-family:'Spectral',serif;font-size:19px;margin:0;font-weight:600;}
+  #tab-guitar .mins{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--gt-brass-soft);white-space:nowrap;}
+  #tab-guitar .gcard p{margin:0 0 8px;font-size:14.5px;line-height:1.5;color:var(--gt-parchment);}
+  #tab-guitar .gcard p.detail{color:var(--gt-muted);font-size:13.5px;}
+  #tab-guitar .key-line{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--gt-brass-soft);margin-bottom:12px;}
+  #tab-guitar .chord-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;}
+  #tab-guitar .chord-item{text-align:center;}
+  #tab-guitar .chord-item .name{font-family:'Space Mono',monospace;font-size:13px;color:var(--gt-parchment);margin-top:4px;display:block;}
+  #tab-guitar .chord-item .fingering-note{font-size:10px;color:var(--gt-muted);max-width:78px;line-height:1.3;margin-top:2px;}
+  #tab-guitar .chord-svg{background:var(--gt-panel-2);border-radius:6px;padding:4px;}
+  #tab-guitar .theory-card{border-style:dashed;}
+  #tab-guitar .theory-card h2{font-size:16px;}
+  #tab-guitar .theory-card p{font-style:italic;color:var(--gt-muted);font-size:13.5px;}
+  #tab-guitar footer{text-align:center;color:var(--gt-muted);font-size:12px;padding:24px 20px 0;font-family:'Space Mono',monospace;}
+</style>
+
+<!-- ========================================================= -->
+<!-- BRAIN TAB STYLES                                           -->
+<!-- ========================================================= -->
+<style>
+  #tab-brain{
+    --br-bg:#120f1c; --br-panel:#1c1830; --br-panel2:#241f3d; --br-line:#332c50;
+    --br-ink:#eee9ff; --br-ink-dim:#a79fc9; --br-violet:#9b8cff; --br-teal:#52e0c4; --br-pink:#ff8fc7;
+    background:radial-gradient(120% 80% at 50% -10%, #241f3d 0%, var(--br-bg) 55%) fixed;
+    color:var(--br-ink);
+    padding:18px 16px 40px;
+  }
+  #tab-brain .br-wrap{max-width:520px;margin:0 auto;}
+  #tab-brain header{padding:8px 4px 18px;}
+  #tab-brain .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--br-teal);font-weight:700;margin:0 0 6px;}
+  #tab-brain h1{margin:0;font-size:32px;font-weight:800;letter-spacing:-.02em;
+    background:linear-gradient(95deg,var(--br-violet),var(--br-pink));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  #tab-brain .sub{color:var(--br-ink-dim);font-size:14px;margin:8px 2px 0;}
+
+  #tab-brain .br-menu{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+  #tab-brain .br-tile{background:linear-gradient(180deg,var(--br-panel),var(--br-panel2));border:1px solid var(--br-line);
+    border-radius:16px;padding:16px;text-align:left;color:var(--br-ink);cursor:pointer;font-family:inherit;}
+  #tab-brain .br-tile .ic{font-size:24px;display:block;margin-bottom:8px;}
+  #tab-brain .br-tile .t{font-size:14.5px;font-weight:800;display:block;}
+  #tab-brain .br-tile .d{font-size:11.5px;color:var(--br-ink-dim);display:block;margin-top:3px;}
+  #tab-brain .br-tile .best{font-size:11px;color:var(--br-teal);display:block;margin-top:8px;font-weight:700;}
+  #tab-brain .br-mix{grid-column:1/-1;width:100%;border:none;cursor:pointer;font-family:inherit;
+    background:linear-gradient(95deg,var(--br-violet),var(--br-pink));color:#160f2b;font-size:16px;font-weight:800;
+    padding:15px;border-radius:14px;margin-top:2px;}
+
+  #tab-brain .br-game{background:var(--br-panel);border:1px solid var(--br-line);border-radius:16px;padding:18px;}
+  #tab-brain .br-back{background:none;border:none;color:var(--br-ink-dim);font-family:inherit;font-size:13px;
+    font-weight:700;cursor:pointer;padding:0 0 14px;}
+  #tab-brain .br-game h2{margin:0 0 4px;font-size:19px;font-weight:800;}
+  #tab-brain .br-game .stat{color:var(--br-ink-dim);font-size:13px;margin:0 0 14px;}
+
+  #tab-brain .br-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+  #tab-brain .br-mcard{aspect-ratio:1;background:var(--br-panel2);border:1px solid var(--br-line);border-radius:10px;
+    display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;}
+  #tab-brain .br-mcard.flipped{background:var(--br-violet);}
+  #tab-brain .br-mcard.matched{background:var(--br-teal);opacity:.55;cursor:default;}
+
+  #tab-brain .br-scramble{font-family:'Space Mono',monospace;font-size:30px;letter-spacing:.15em;text-align:center;
+    padding:20px 0;color:var(--br-violet);font-weight:700;}
+  #tab-brain .br-row{display:flex;gap:8px;margin-top:6px;}
+  #tab-brain .br-row input{flex:1;background:var(--br-panel2);border:1px solid var(--br-line);color:var(--br-ink);
+    border-radius:10px;padding:12px 14px;font-size:16px;font-family:inherit;}
+  #tab-brain .br-btn{background:var(--br-violet);color:#160f2b;border:none;border-radius:10px;padding:12px 18px;
+    font-weight:800;font-family:inherit;font-size:14px;cursor:pointer;}
+  #tab-brain .br-btn.ghost{background:var(--br-panel2);color:var(--br-ink);border:1px solid var(--br-line);}
+  #tab-brain .br-feedback{margin-top:10px;font-size:14px;font-weight:700;min-height:20px;}
+  #tab-brain .br-feedback.good{color:var(--br-teal);}
+  #tab-brain .br-feedback.bad{color:var(--br-pink);}
+
+  #tab-brain .br-math-problem{font-family:'Space Mono',monospace;font-size:38px;font-weight:700;text-align:center;padding:16px 0;}
+  #tab-brain .br-timer{text-align:center;font-size:13px;color:var(--br-ink-dim);margin-bottom:6px;}
+
+  #tab-brain .br-reactzone{border-radius:14px;padding:60px 20px;text-align:center;font-size:18px;font-weight:800;
+    cursor:pointer;background:var(--br-panel2);color:var(--br-ink-dim);user-select:none;}
+  #tab-brain .br-reactzone.wait{background:#5c2a2a;color:#ffd9d9;}
+  #tab-brain .br-reactzone.go{background:var(--br-teal);color:#0a2b24;}
+
+  #tab-brain .br-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;}
+  #tab-brain .br-opt{background:var(--br-panel2);border:1px solid var(--br-line);color:var(--br-ink);
+    border-radius:10px;padding:14px;font-family:'Space Mono',monospace;font-size:17px;font-weight:700;cursor:pointer;}
+  #tab-brain .br-opt.correct{background:var(--br-teal);color:#0a2b24;border-color:var(--br-teal);}
+  #tab-brain .br-opt.wrong{background:var(--br-pink);color:#3a0a1f;border-color:var(--br-pink);}
+  #tab-brain .br-sequence{font-family:'Space Mono',monospace;font-size:22px;text-align:center;padding:10px 0;color:var(--br-violet);}
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<div class="tabbar">
+  <button class="tabbtn active" data-tab="workout"><span class="icon">💪</span>Workout</button>
+  <button class="tabbtn" data-tab="guitar"><span class="icon">🎸</span>Guitar</button>
+  <button class="tabbtn" data-tab="brain"><span class="icon">🧠</span>Brain</button>
+</div>
+
+<!-- ========================================================= -->
+<!-- WORKOUT TAB                                                -->
+<!-- ========================================================= -->
+<div id="tab-workout" class="tab-panel active">
+<div class="wo-wrap">
   <header>
     <p class="eyebrow">Daily Strength · Built for your sports</p>
     <h1>Morning Build</h1>
     <p class="sub">Tap your time, build a workout. Strength + cardio for snowboarding, basketball, skating &amp; bodyboarding.</p>
   </header>
 
-  <div class="card">
+  <div class="wo-card">
+    <button class="wo-toggle" id="wo-bwToggle"><span class="dot"></span><span class="txt">Away from home — bodyweight only</span></button>
+  </div>
+
+  <div class="wo-card">
     <h2>How long this morning?</h2>
-    <div class="times" id="times">
-      <button class="chip" data-min="15">15<span class="u">min</span></button>
-      <button class="chip active" data-min="30">30<span class="u">min</span></button>
-      <button class="chip" data-min="45">45<span class="u">min</span></button>
-      <button class="chip" data-min="60">60<span class="u">min</span></button>
+    <div class="wo-times" id="wo-times">
+      <button class="wo-chip" data-min="15">15<span class="u">min</span></button>
+      <button class="wo-chip active" data-min="30">30<span class="u">min</span></button>
+      <button class="wo-chip" data-min="45">45<span class="u">min</span></button>
+      <button class="wo-chip" data-min="60">60<span class="u">min</span></button>
     </div>
-    <div class="custom-row">
+    <div class="wo-custom-row">
       <label>Custom:</label>
-      <input id="custom" type="number" inputmode="numeric" min="10" max="120" placeholder="e.g. 25 min">
+      <input id="wo-custom" type="number" inputmode="numeric" min="10" max="120" placeholder="e.g. 25 min">
     </div>
   </div>
 
-  <div class="card">
+  <div class="wo-card">
     <h2>Focus <span style="text-transform:none;letter-spacing:0;font-weight:500;">(or let it rotate)</span></h2>
-    <div class="focus" id="focus">
-      <button class="fbtn active" data-focus="auto"><span class="ck">✓</span>Auto-rotate<span class="ft">Smart pick based on last session</span></button>
-      <button class="fbtn" data-focus="full"><span class="ck">✓</span>Full body<span class="ft">A bit of everything</span></button>
-      <button class="fbtn" data-focus="push"><span class="ck">✓</span>Push<span class="ft">Chest, shoulders, triceps</span></button>
-      <button class="fbtn" data-focus="pull"><span class="ck">✓</span>Pull + core<span class="ft">Back, biceps, midsection</span></button>
-      <button class="fbtn" data-focus="legs"><span class="ck">✓</span>Legs + power<span class="ft">Glutes, quads, explosiveness</span></button>
-      <button class="fbtn" data-focus="cardio"><span class="ck">✓</span>Cardio + core<span class="ft">Treadmill-forward, lighter lift</span></button>
+    <div class="wo-focus" id="wo-focus">
+      <button class="wo-fbtn active" data-focus="auto"><span class="ck">✓</span>Auto-rotate<span class="ft">Smart pick based on last session</span></button>
+      <button class="wo-fbtn" data-focus="full"><span class="ck">✓</span>Full body<span class="ft">A bit of everything</span></button>
+      <button class="wo-fbtn" data-focus="push"><span class="ck">✓</span>Push<span class="ft">Chest, shoulders, triceps</span></button>
+      <button class="wo-fbtn" data-focus="pull"><span class="ck">✓</span>Pull + core<span class="ft">Back, biceps, midsection</span></button>
+      <button class="wo-fbtn" data-focus="legs"><span class="ck">✓</span>Legs + power<span class="ft">Glutes, quads, explosiveness</span></button>
+      <button class="wo-fbtn" data-focus="cardio"><span class="ck">✓</span>Cardio + core<span class="ft">Treadmill-forward, lighter lift</span></button>
     </div>
   </div>
 
-  <button class="build" id="build">Build my workout</button>
+  <button class="wo-build" id="wo-build">Build my workout</button>
 
-  <div id="out">
-    <div class="empty">
+  <div id="wo-out">
+    <div class="wo-empty">
       <span class="big">🌅</span>
       Pick a time and tap <b>Build my workout</b>.<br>Your session will appear here.
     </div>
   </div>
 
-  <p class="foot">
+  <p class="wo-foot" id="wo-foot">
     Equipment assumed: treadmill (incline 0–12, speed 0–4), dumbbell pairs 5–50 lb,
     weighted vest 0–40 lb, bench.<br>
     Rotation is remembered on this phone. Listen to your body — skip or swap anything that hurts.
   </p>
 </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- GUITAR TAB                                                 -->
+<!-- ========================================================= -->
+<div id="tab-guitar" class="tab-panel">
+<div class="gt-header">
+  <p class="eyebrow">Practice Companion</p>
+  <h1>Woodshed</h1>
+  <p class="gt-tagline">Set your minutes, hit generate, and get a full session — progression, lead work, technique, and something to think about — sized to whatever time you've got today.</p>
+</div>
+
+<main>
+  <div class="gcard-controls">
+    <label for="gt-customMinutes">Minutes today</label>
+    <div class="minute-row" id="gt-presetRow">
+      <button class="gchip" data-min="10">10</button>
+      <button class="gchip" data-min="20">20</button>
+      <button class="gchip" data-min="30">30</button>
+      <button class="gchip" data-min="45">45</button>
+      <button class="gchip" data-min="60">60</button>
+    </div>
+    <div class="custom-minutes">
+      <input type="number" id="gt-customMinutes" min="5" max="120" step="5" value="20">
+      <span>minutes, exactly</span>
+    </div>
+    <button class="gt-generate" id="gt-generateBtn">Generate today's session</button>
+  </div>
+
+  <div id="gt-results"></div>
+</main>
+
+<footer>strings don't lie — log the minutes anyway</footer>
+</div>
+
+<!-- ========================================================= -->
+<!-- BRAIN TAB                                                  -->
+<!-- ========================================================= -->
+<div id="tab-brain" class="tab-panel">
+<div class="br-wrap">
+  <header>
+    <p class="eyebrow">Quick Mental Reps</p>
+    <h1>Brain Games</h1>
+    <p class="sub">Five quick games — memory, words, math, reaction, and pattern logic. Pick one, or let it surprise you.</p>
+  </header>
+
+  <div id="br-menu" class="br-menu">
+    <button class="br-tile" data-game="memory"><span class="ic">🃏</span><span class="t">Memory Match</span><span class="d">Flip &amp; find the pairs</span><span class="best" id="br-best-memory"></span></button>
+    <button class="br-tile" data-game="word"><span class="ic">🔤</span><span class="t">Word Scramble</span><span class="d">Unscramble the word</span><span class="best" id="br-best-word"></span></button>
+    <button class="br-tile" data-game="math"><span class="ic">➗</span><span class="t">Quick Math</span><span class="d">60 seconds, go</span><span class="best" id="br-best-math"></span></button>
+    <button class="br-tile" data-game="reaction"><span class="ic">⚡️</span><span class="t">Reaction Tap</span><span class="d">Wait for green</span><span class="best" id="br-best-reaction"></span></button>
+    <button class="br-tile" data-game="pattern"><span class="ic">🧩</span><span class="t">Pattern Logic</span><span class="d">What comes next?</span><span class="best" id="br-best-pattern"></span></button>
+    <button class="br-mix" id="br-mixBtn">🎲 Mix it up — surprise me</button>
+  </div>
+
+  <div id="br-game" class="br-game" style="display:none;">
+    <button class="br-back" id="br-backBtn">‹ Back to games</button>
+    <div id="br-game-body"></div>
+  </div>
+</div>
+</div>
 
 <script>
-/* ============================================================
-   MORNING BUILD — built-in workout logic (no internet needed)
-   ------------------------------------------------------------
-   Structure is split so PHASE 2 (exercise-level tracking) drops
-   in cleanly later:
-     • LIBRARY   — every exercise, tagged by focus + type
-     • CARDIO    — the "filler" moves done between strength sets
-     • generate()— assembles warm-up / main / cooldown to fit time
-     • storage   — remembers last focus so auto-rotate works
-   ============================================================ */
+/* ========================================================= */
+/* TAB SWITCHER                                                */
+/* ========================================================= */
+(function(){
+  const tabs = document.querySelectorAll('.tabbtn');
+  const panels = document.querySelectorAll('.tab-panel');
+  function activate(name){
+    tabs.forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+    panels.forEach(p=>p.classList.toggle('active', p.id==='tab-'+name));
+    try{ localStorage.setItem('app_last_tab', name); }catch(e){}
+  }
+  tabs.forEach(t=>t.addEventListener('click', ()=>activate(t.dataset.tab)));
+  let last;
+  try{ last = localStorage.getItem('app_last_tab'); }catch(e){}
+  if(last) activate(last);
+})();
+</script>
 
-/* ---------- 1. EXERCISE LIBRARY ----------
-   type: lift | cardio | mob (mobility/stretch)
-   focus: which day(s) it belongs to
-   sport: optional note tying it to your activities
-   load:  how to scale with your dumbbells/vest                  */
+<!-- ========================================================= -->
+<!-- WORKOUT LOGIC                                              -->
+<!-- ========================================================= -->
+<script>
+(function(){
+/* ---------- 1. EXERCISE LIBRARY (equipment) ---------- */
 const LIBRARY = [
   // ---- PUSH ----
   {name:"Dumbbell bench press", type:"lift", focus:["push","full"], sport:"Pushing power for basketball & paddling", scheme:"4 × 8–10", load:"Pick a pair you fail near rep 10 (try 25–35 lb)"},
@@ -221,7 +423,6 @@ const LIBRARY = [
   {name:"Push-ups (feet on bench = harder)", type:"lift", focus:["push","full"], sport:"Pop-up strength for bodyboarding", scheme:"3 × max", load:"Add weighted vest 10–20 lb to progress"},
   {name:"DB floor / bench fly", type:"lift", focus:["push"], scheme:"3 × 12", load:"10–15 lb pair"},
   {name:"Triceps overhead extension", type:"lift", focus:["push"], scheme:"3 × 12", load:"15–25 lb (one bell, both hands)"},
-
   // ---- PULL + CORE ----
   {name:"One-arm DB row (knee on bench)", type:"lift", focus:["pull","full"], sport:"Back strength for paddling & carving", scheme:"4 × 10 each side", load:"25–40 lb"},
   {name:"Bent-over two-DB row", type:"lift", focus:["pull","full"], scheme:"3 × 10", load:"20–30 lb pair"},
@@ -231,7 +432,6 @@ const LIBRARY = [
   {name:"Plank", type:"lift", focus:["pull","full","cardio"], sport:"Core stability for every board sport", scheme:"3 × 45–60 sec", load:"Vest 10–25 lb to progress"},
   {name:"Russian twists", type:"lift", focus:["pull","cardio"], sport:"Rotational power for snowboarding & skating", scheme:"3 × 20 twists", load:"Hold one 10–20 lb bell"},
   {name:"Hanging-style knee tuck on bench", type:"lift", focus:["pull","cardio"], scheme:"3 × 15", load:"Bodyweight"},
-
   // ---- LEGS + POWER ----
   {name:"Goblet squat", type:"lift", focus:["legs","full"], sport:"The base for snowboarding & basketball", scheme:"4 × 10–12", load:"Hold one 30–50 lb bell"},
   {name:"DB reverse lunge", type:"lift", focus:["legs","full"], sport:"Single-leg balance for skating & carving", scheme:"3 × 10 each", load:"20–35 lb pair"},
@@ -240,9 +440,9 @@ const LIBRARY = [
   {name:"Step-ups onto bench", type:"lift", focus:["legs","cardio"], sport:"Single-leg drive for skating & carving", scheme:"3 × 12 each", load:"20–35 lb pair or vest"},
   {name:"Calf raises off bench edge", type:"lift", focus:["legs"], scheme:"3 × 20", load:"Hold 25–40 lb"},
   {name:"Wall sit", type:"lift", focus:["legs","cardio"], sport:"Snowboard burn tolerance", scheme:"3 × 45 sec", load:"Vest 10–25 lb to progress"},
-
-  // ---- MOBILITY / WARM-UP / COOLDOWN ----
-  {name:"Treadmill brisk walk, incline 4–6, speed 3", type:"cardio", focus:["warm"], scheme:"3–4 min", load:""},
+  // ---- MOBILITY / WARM-UP / COOLDOWN (shared, bodyweight already) ----
+  {name:"Treadmill brisk walk, incline 4–6, speed 3", type:"cardio", focus:["warm"], scheme:"3–4 min", load:"", equip:true},
+  {name:"Jog or march in place, brisk pace", type:"cardio", focus:["warm"], scheme:"3–4 min", load:""},
   {name:"Leg swings + arm circles", type:"mob", focus:["warm"], scheme:"1 min", load:""},
   {name:"World's greatest stretch", type:"mob", focus:["warm","cool"], scheme:"5 each side", load:""},
   {name:"Bodyweight squat to stand", type:"mob", focus:["warm"], scheme:"10 reps", load:""},
@@ -251,15 +451,41 @@ const LIBRARY = [
   {name:"Downward dog → cobra flow", type:"mob", focus:["cool"], scheme:"5 slow rounds", load:""},
   {name:"Seated forward fold + hamstring stretch", type:"mob", focus:["cool"], scheme:"45 sec", load:""},
   {name:"Pigeon pose", type:"mob", focus:["cool"], sport:"Hips for snowboard stance", scheme:"45 sec each", load:""},
-  {name:"Foam roll quads & IT band", type:"mob", focus:["cool"], sport:"Recovery for snowboard & skate legs", scheme:"45 sec each leg", load:""},
-  {name:"Foam roll upper back (thoracic)", type:"mob", focus:["cool"], sport:"Undo paddling & desk hunch", scheme:"45 sec", load:""},
-  {name:"Foam roll calves & hamstrings", type:"mob", focus:["cool"], scheme:"45 sec each leg", load:""},
+  {name:"Foam roll quads & IT band", type:"mob", focus:["cool"], sport:"Recovery for snowboard & skate legs", scheme:"45 sec each leg", load:"", equip:true},
+  {name:"Foam roll upper back (thoracic)", type:"mob", focus:["cool"], sport:"Undo paddling & desk hunch", scheme:"45 sec", load:"", equip:true},
+  {name:"Foam roll calves & hamstrings", type:"mob", focus:["cool"], scheme:"45 sec each leg", load:"", equip:true},
   {name:"Child's pose + deep breathing", type:"mob", focus:["cool"], scheme:"1 min", load:""},
 ];
 
-/* ---------- 2. CARDIO FILLERS (between strength sets) ----------
-   Rep-based (counted), no treadmill — kept quick so you don't lose
-   momentum between sets. All work under an 8-ft ceiling.            */
+/* ---------- 1b. BODYWEIGHT-ONLY LIBRARY (away from home) ---------- */
+const BODYWEIGHT_LIBRARY = [
+  // ---- PUSH ----
+  {name:"Push-ups", type:"lift", focus:["push","full"], sport:"Pushing power for basketball & paddling", scheme:"4 × max", load:"Bodyweight — elevate feet on a step to add difficulty"},
+  {name:"Pike push-ups", type:"lift", focus:["push"], sport:"Shoulder strength for bodyboard paddling", scheme:"3 × 8–10", load:"Bodyweight"},
+  {name:"Diamond push-ups", type:"lift", focus:["push"], scheme:"3 × max", load:"Bodyweight, triceps-focused"},
+  {name:"Wide push-ups", type:"lift", focus:["push","full"], scheme:"3 × max", load:"Bodyweight, chest-focused"},
+  {name:"Plank shoulder taps", type:"lift", focus:["push","full"], scheme:"3 × 20 taps", load:"Bodyweight"},
+  {name:"Incline push-ups (hands on bench/rail/curb)", type:"lift", focus:["push"], scheme:"3 × 12", load:"Bodyweight, easier variation"},
+  // ---- PULL + CORE ----
+  {name:"Superman rows", type:"lift", focus:["pull","full"], sport:"Back strength for paddling & carving", scheme:"3 × 12", load:"Bodyweight — squeeze shoulder blades at the top"},
+  {name:"Prone Y-T-W raises", type:"lift", focus:["pull"], scheme:"3 × 8 each letter", load:"Bodyweight"},
+  {name:"Reverse plank", type:"lift", focus:["pull","full"], scheme:"3 × 30–45 sec", load:"Bodyweight"},
+  {name:"Bird-dog", type:"lift", focus:["pull","cardio"], sport:"Core stability for every board sport", scheme:"3 × 10 each side", load:"Bodyweight"},
+  {name:"Glute bridge march", type:"lift", focus:["pull","legs"], scheme:"3 × 10 each leg", load:"Bodyweight"},
+  {name:"Plank", type:"lift", focus:["pull","full","cardio"], sport:"Core stability for every board sport", scheme:"3 × 45–60 sec", load:"Bodyweight"},
+  {name:"Russian twists", type:"lift", focus:["pull","cardio"], sport:"Rotational power for snowboarding & skating", scheme:"3 × 20 twists", load:"Bodyweight — add a backpack for resistance"},
+  // ---- LEGS + POWER ----
+  {name:"Bodyweight squat", type:"lift", focus:["legs","full"], sport:"The base for snowboarding & basketball", scheme:"4 × 15–20", load:"Bodyweight"},
+  {name:"Walking lunges", type:"lift", focus:["legs","full"], sport:"Single-leg balance for skating & carving", scheme:"3 × 12 each", load:"Bodyweight"},
+  {name:"Bulgarian split squat (rear foot on chair/step)", type:"lift", focus:["legs"], sport:"Snowboard leg endurance", scheme:"3 × 10 each", load:"Bodyweight"},
+  {name:"Single-leg Romanian deadlift", type:"lift", focus:["legs","pull"], sport:"Hamstring/back chain for pop & paddling", scheme:"3 × 10 each", load:"Bodyweight"},
+  {name:"Step-ups (stairs, curb, or sturdy chair)", type:"lift", focus:["legs","cardio"], sport:"Single-leg drive for skating & carving", scheme:"3 × 15 each", load:"Bodyweight"},
+  {name:"Jump squats", type:"lift", focus:["legs","cardio"], sport:"Explosive power for pop & carving", scheme:"3 × 12", load:"Bodyweight"},
+  {name:"Wall sit", type:"lift", focus:["legs","cardio"], sport:"Snowboard burn tolerance", scheme:"3 × 45 sec", load:"Bodyweight"},
+  {name:"Calf raises", type:"lift", focus:["legs"], scheme:"3 × 20", load:"Bodyweight"},
+];
+
+/* ---------- 2. CARDIO FILLERS (already bodyweight, shared) ---------- */
 const CARDIO = [
   {name:"Jumping jacks", scheme:"25 reps"},
   {name:"Mountain climbers", scheme:"20 reps each leg"},
@@ -274,21 +500,21 @@ const CARDIO = [
 /* ---------- 3. STATE ---------- */
 let selMin = 30;
 let selFocus = "auto";
-const ROTATION = ["push","pull","legs","cardio"]; // auto-rotate order
+let bodyweight = false;
+try{ bodyweight = localStorage.getItem("mb_bodyweight") === "1"; }catch(e){}
+const ROTATION = ["push","pull","legs","cardio"];
 
-/* ---------- storage (remembers last focus) ---------- */
 function lastFocus(){ try{return localStorage.getItem("mb_lastFocus");}catch(e){return null;} }
 function saveFocus(f){ try{localStorage.setItem("mb_lastFocus",f);}catch(e){} }
 
 function resolveFocus(){
   if(selFocus !== "auto") return selFocus;
   const prev = lastFocus();
-  if(!prev) return "full";                         // first ever session
+  if(!prev) return "full";
   const i = ROTATION.indexOf(prev);
-  return ROTATION[(i + 1) % ROTATION.length];      // next in rotation
+  return ROTATION[(i + 1) % ROTATION.length];
 }
 
-/* ---------- helpers ---------- */
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function pick(arr,n){return shuffle(arr).slice(0,n);}
 function typePill(t){
@@ -297,40 +523,45 @@ function typePill(t){
   return '<span class="pill lift">Strength</span>';
 }
 
+const FOOT_NORMAL = `Equipment assumed: treadmill (incline 0–12, speed 0–4), dumbbell pairs 5–50 lb,
+    weighted vest 0–40 lb, bench.<br>
+    Rotation is remembered on this phone. Listen to your body — skip or swap anything that hurts.`;
+const FOOT_BODYWEIGHT = `No equipment needed — just space to move. Good for travel days or the shore house.<br>
+    Rotation is remembered on this phone. Listen to your body — skip or swap anything that hurts.`;
+
+function applyToggleUI(){
+  const btn = document.getElementById("wo-bwToggle");
+  btn.classList.toggle("active", bodyweight);
+  btn.querySelector(".txt").textContent = bodyweight ? "Bodyweight only — away from home" : "Away from home — bodyweight only";
+  document.getElementById("wo-foot").innerHTML = bodyweight ? FOOT_BODYWEIGHT : FOOT_NORMAL;
+}
+
 /* ---------- 4. GENERATOR ---------- */
 function generate(){
   const focus = resolveFocus();
   const min = selMin;
 
-  // How many main strength moves fit the time budget?
-  // Warm-up ~ (min<=20?3:5) min, cooldown ~ (min<=20?3:6) min.
-  // Each strength move w/ a cardio filler ≈ 6 min.
-  // The time you pick is your WORKING time (main + cooldown).
-  // Warm-up is added on top as a separate "before you start" block,
-  // so it never eats into the minutes you chose.
-  const warmMin = min<=20?3:5;   // not counted in your selected time
+  const warmMin = min<=20?3:5;
   const coolMin = min<=20?3:6;
   let mainMin = Math.max(min - coolMin, 6);
   let mainCount = Math.max(2, Math.round(mainMin/6));
   mainCount = Math.min(mainCount, 7);
 
-  // ----- warm-up -----
-  const warmPool = LIBRARY.filter(e=>e.focus.includes("warm"));
+  const warmPool = LIBRARY.filter(e=>e.focus.includes("warm") && (!bodyweight || !e.equip));
   const warm = pick(warmPool, min<=20?2:3);
-  // always lead with treadmill walk if present
-  const walk = warmPool.find(e=>e.name.startsWith("Treadmill"));
-  if(walk && !warm.includes(walk)){ warm.unshift(walk); warm.pop(); }
+  const leadName = bodyweight ? "Jog" : "Treadmill";
+  const lead = warmPool.find(e=>e.name.startsWith(leadName));
+  if(lead && !warm.includes(lead)){ warm.unshift(lead); warm.pop(); }
 
-  // ----- main strength (focus-matched, falls back to full) -----
-  let mainPool = LIBRARY.filter(e=>e.type!=="mob" && e.focus.includes(focus));
+  const srcLibrary = bodyweight ? BODYWEIGHT_LIBRARY : LIBRARY;
+  let mainPool = srcLibrary.filter(e=>e.type!=="mob" && e.focus.includes(focus));
   if(mainPool.length < mainCount){
-    const extra = LIBRARY.filter(e=>e.type!=="mob" && e.focus.includes("full") && !mainPool.includes(e));
+    const extra = srcLibrary.filter(e=>e.type!=="mob" && e.focus.includes("full") && !mainPool.includes(e));
     mainPool = mainPool.concat(extra);
   }
   const main = pick(mainPool, Math.min(mainCount, mainPool.length));
 
-  // ----- cooldown -----
-  const coolPool = LIBRARY.filter(e=>e.focus.includes("cool"));
+  const coolPool = LIBRARY.filter(e=>e.focus.includes("cool") && (!bodyweight || !e.equip));
   const cool = pick(coolPool, min<=20?2:4);
 
   saveFocus(focus);
@@ -343,7 +574,7 @@ const FOCUS_LABEL = {push:"Push day",pull:"Pull + core",legs:"Legs + power",card
 function exRow(e, withFiller){
   const sport = e.sport ? `<small>↳ ${e.sport}</small>` : "";
   const load = e.load ? `<small>${e.load}</small>` : "";
-  let html = `<div class="ex">
+  let html = `<div class="wo-ex">
       <div class="n">${e.name}${sport}${load}</div>
       <div style="text-align:right">
         <div style="font-size:13px;font-weight:700;margin-bottom:6px">${e.scheme||""}</div>
@@ -352,8 +583,8 @@ function exRow(e, withFiller){
     </div>`;
   if(withFiller){
     const f = pick(CARDIO,1)[0];
-    const note = f.note?` <small style="color:var(--ink-dim)">(${f.note})</small>`:"";
-    html += `<div class="ex" style="border-style:dashed;opacity:.92">
+    const note = f.note?` <small style="color:var(--wo-ink-dim)">(${f.note})</small>`:"";
+    html += `<div class="wo-ex" style="border-style:dashed;opacity:.92">
         <div class="n" style="font-weight:600">↻ Between sets: ${f.name}${note}</div>
         <div style="text-align:right">
           <div style="font-size:13px;font-weight:700;margin-bottom:6px">${f.scheme}</div>
@@ -365,58 +596,631 @@ function exRow(e, withFiller){
 }
 
 function render(w){
-  const out = document.getElementById("out");
+  const out = document.getElementById("wo-out");
   const total = w.min;
   let html = `
     <div class="wo-head">
-      <div class="wo-title">${FOCUS_LABEL[w.focus]}</div>
+      <div class="wo-title">${FOCUS_LABEL[w.focus]}${bodyweight ? " · Bodyweight" : ""}</div>
       <div class="wo-meta">${total} min working<br>+ warm-up · ${w.main.length} main moves<br>${new Date().toLocaleDateString(undefined,{weekday:'long'})}</div>
     </div>
-
-    <div class="block">
-      <div class="block-label b-warm"><span class="dot"></span>Warm-up · before the clock starts</div>
+    <div class="wo-block">
+      <div class="wo-block-label b-warm"><span class="dot"></span>Warm-up · before the clock starts</div>
       ${w.warm.map(e=>exRow(e,false)).join("")}
     </div>
-
-    <div class="block">
-      <div class="block-label b-main"><span class="dot"></span>Main · strength + cardio</div>
+    <div class="wo-block">
+      <div class="wo-block-label b-main"><span class="dot"></span>Main · strength + cardio</div>
       ${w.main.map((e,i)=>exRow(e, i < w.main.length-0)).join("")}
     </div>
-
-    <div class="block">
-      <div class="block-label b-cool"><span class="dot"></span>Cooldown · stretch &amp; breathe</div>
+    <div class="wo-block">
+      <div class="wo-block-label b-cool"><span class="dot"></span>Cooldown · stretch &amp; breathe</div>
       ${w.cool.map(e=>exRow(e,false)).join("")}
     </div>
-
-    <button class="rebuild" id="rebuild">↻ Build a different one</button>
+    <button class="wo-rebuild" id="wo-rebuild">↻ Build a different one</button>
   `;
   out.innerHTML = html;
-  document.getElementById("rebuild").addEventListener("click",()=>{generate();window.scrollTo({top:0,behavior:'smooth'});});
+  document.getElementById("wo-rebuild").addEventListener("click",()=>{generate();window.scrollTo({top:0,behavior:'smooth'});});
   out.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 /* ---------- 6. WIRE UP UI ---------- */
-document.getElementById("times").addEventListener("click",e=>{
-  const b = e.target.closest(".chip"); if(!b)return;
-  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+document.getElementById("wo-times").addEventListener("click",e=>{
+  const b = e.target.closest(".wo-chip"); if(!b)return;
+  document.querySelectorAll("#tab-workout .wo-chip").forEach(c=>c.classList.remove("active"));
   b.classList.add("active");
   selMin = parseInt(b.dataset.min,10);
-  document.getElementById("custom").value="";
+  document.getElementById("wo-custom").value="";
 });
-document.getElementById("custom").addEventListener("input",e=>{
+document.getElementById("wo-custom").addEventListener("input",e=>{
   const v = parseInt(e.target.value,10);
   if(v && v>=10){
     selMin = Math.min(v,120);
-    document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+    document.querySelectorAll("#tab-workout .wo-chip").forEach(c=>c.classList.remove("active"));
   }
 });
-document.getElementById("focus").addEventListener("click",e=>{
-  const b = e.target.closest(".fbtn"); if(!b)return;
-  document.querySelectorAll(".fbtn").forEach(c=>c.classList.remove("active"));
+document.getElementById("wo-focus").addEventListener("click",e=>{
+  const b = e.target.closest(".wo-fbtn"); if(!b)return;
+  document.querySelectorAll("#tab-workout .wo-fbtn").forEach(c=>c.classList.remove("active"));
   b.classList.add("active");
   selFocus = b.dataset.focus;
 });
-document.getElementById("build").addEventListener("click",generate);
+document.getElementById("wo-build").addEventListener("click",generate);
+document.getElementById("wo-bwToggle").addEventListener("click",()=>{
+  bodyweight = !bodyweight;
+  try{ localStorage.setItem("mb_bodyweight", bodyweight ? "1" : "0"); }catch(e){}
+  applyToggleUI();
+});
+applyToggleUI();
+})();
+</script>
+
+<!-- ========================================================= -->
+<!-- GUITAR LOGIC (Woodshed)                                    -->
+<!-- ========================================================= -->
+<script>
+(function(){
+const CHORDS = {
+  C:  { frets:['x',3,2,0,1,0], root:'C' },
+  G:  { frets:[3,2,0,0,0,3],   root:'G' },
+  D:  { frets:['x','x',0,2,3,2], root:'D' },
+  A:  { frets:['x',0,2,2,2,0], root:'A' },
+  E:  { frets:[0,2,2,1,0,0],   root:'E' },
+  F:  { frets:['x',3,3,2,1,1], root:'F', note:'Mini-barre: lay one finger flat across the top 4 strings.' },
+  Am: { frets:['x',0,2,2,1,0], root:'A' },
+  Em: { frets:[0,2,2,0,0,0],   root:'E' },
+  Dm: { frets:['x','x',0,2,3,1], root:'D' },
+  Bm: { frets:['x',2,4,4,3,2], root:'B', note:'Barre chord: index finger flat across the 2nd fret.' },
+  G7: { frets:[3,2,0,0,0,1],   root:'G' },
+  D7: { frets:['x','x',0,2,1,2], root:'D' },
+  A7: { frets:['x',0,2,0,2,0], root:'A' },
+  E7: { frets:[0,2,0,1,0,0],   root:'E' },
+  C7: { frets:['x',3,2,3,1,0], root:'C' },
+  B7: { frets:['x',2,1,2,0,2], root:'B' },
+};
+const MAJOR_KEYS = { C:{I:'C',ii:'Dm',IV:'F',V:'G',vi:'Am'}, G:{I:'G',ii:'Am',IV:'C',V:'D',vi:'Em'}, D:{I:'D',ii:'Em',IV:'G',V:'A',vi:'Bm'} };
+const MINOR_KEYS = { Am:{i:'Am',III:'C',iv:'Dm',v:'Em',VI:'F',VII:'G'}, Em:{i:'Em',III:'G',iv:'Am',v:'Bm',VI:'C',VII:'D'} };
+const BLUES_KEYS = { C:{I:'C',IV:'F',V7:'G7'}, G:{I:'G',IV:'C',V7:'D7'}, D:{I:'D',IV:'G',V7:'A7'}, A:{I:'A',IV:'D',V7:'E7'}, E:{I:'E',IV:'A',V7:'B7'} };
+const MAJOR_PROGRESSIONS = [ ['I','V','vi','IV'],['vi','IV','I','V'],['I','IV','V','IV'],['I','vi','IV','V'],['ii','V','I','vi'],['I','IV','I','V'] ];
+const MINOR_PROGRESSIONS = [ ['i','VI','III','VII'],['i','iv','v','i'],['i','VII','VI','VII'],['i','iv','VII','III'] ];
+const BLUES_PROGRESSIONS = [ ['I','IV','I','V7'] ];
+const REL_MINOR_ROOT = {C:'A', G:'E', D:'B'};
+const MINOR_TONIC_ROOT = {Am:'A', Em:'E'};
+const NOTE_ORDER = ['E','F','F#','G','G#','A','A#','B','C','C#','D','D#'];
+
+const WARMUPS = [
+  {title:'Spider walk', text:'Fret 1-2-3-4 with fingers 1-2-3-4, one string at a time, all six strings ascending then descending. Slow and clean, no picking speed yet.'},
+  {title:'Chromatic crawl', text:'Same 1-2-3-4 pattern, but string-to-string in one continuous run up and back. This is about the fretting hand, not speed.'},
+  {title:'Quiet hands', text:'Fret shapes with your left hand only, no picking. Focus on minimum pressure needed for a clean note.'},
+  {title:'Open string shake', text:'Loosen your wrist and shoulder with a few big shakes, then strum open strings softly, muting and unmuting with your palm.'},
+  {title:'Three old friends', text:'Play through three chords you already know cold, changing slowly, listening for buzz or muted strings.'},
+];
+const TECHNIQUES = [
+  {title:'Alternate picking ladder', text:'Pick open strings down-up-down-up, low E to high e and back. Start at 60 bpm, nudge up by 10 each pass.'},
+  {title:'Hammer-on / pull-off pairs', text:'On one string, hammer 5→7 and pull off 7→5, repeat cleanly for 60 seconds before switching strings.'},
+  {title:'String skipping', text:'Pick low E, then skip to G, then back to A, then skip to high e. Aim for no accidental string noise.'},
+  {title:'Palm-muted eighths', text:'Pick steady eighth notes on a chord shape you know, palm resting lightly on the bridge for a tight, chunky sound.'},
+  {title:'Travis-style bassline', text:'On an open chord, alternate your thumb between the root and 5th while fingers pick the top strings in a steady pattern.'},
+  {title:'Bend for pitch', text:'Bend a note on the B string up a whole step, checking it against the fretted note two frets higher until it matches.'},
+  {title:'One-string legato', text:'Using only hammer-ons and pull-offs (no picking after the first note), run up and down one string for 8 notes.'},
+  {title:'Shape shift', text:'Move an E-shape barre chord up two frets, then back, focusing on landing the whole shape cleanly in one motion.'},
+  {title:'Muted chunk strum', text:'Strum a chord shape with the fretting hand relaxed just enough to mute it — a percussive, rhythmic "chunk" on the downbeats.'},
+  {title:'Slide check', text:'Slide from one fret to another on a single string, aiming to land exactly in tune without overshooting.'},
+];
+const THEORY = [
+  'The CAGED system: five chord shapes (C, A, G, E, D) can be slid up the neck to play any major chord — worth 10 minutes of exploring someday soon.',
+  'Every major key shares its notes with a relative minor key, three frets down from the major root. That relationship is why so many songs shift mood without changing key.',
+  'A ii–V–I progression is the backbone of jazz because the ii and V both pull hard toward I — try isolating just that motion in today\'s key.',
+  'Modes are just major or minor scales starting from a different note in the same set — same notes, different center of gravity.',
+  'Try singing the root note of today\'s key before you play it. Matching pitch by ear is a skill separate from finding it on the fretboard.',
+  'A borrowed chord swaps in a chord from the parallel major or minor key for one unexpected color — a classic move in pop and rock choruses.',
+  'The Nashville Number System writes progressions as numbers instead of chord names, so a band can transpose on the fly. Today\'s progression, numbered, is worth writing out.',
+  'Try transcribing four bars of a song you love by ear this week — just the chord shapes, no tab required.',
+  'Diatonic 7th chords add one more note to each triad in a key, which is most of the difference between a "pop" sound and a "jazz" sound.',
+  'A simple songwriting prompt: hum a two-bar melody over today\'s progression before you\'ve played a single note on the guitar, then find it on the neck.',
+];
+const COOLDOWN_TEMPLATES = [
+  chords => `Strum today's progression (${chords.join(' – ')}) slowly with a simple down-down-up-up-down-up pattern. Prioritize clean changes over speed.`,
+  chords => `Play today's progression fingerstyle — thumb on the root, fingers picking the top three strings — at a relaxed, unhurried tempo.`,
+  (chords, penta) => `Loop today's progression in your head and improvise a short melody over it using the ${penta.root} minor pentatonic shape from earlier.`,
+  chords => `Play through today's progression twice: once focusing only on ringing out every note cleanly, once focusing only on steady rhythm.`,
+];
+const FOCUS_ORDER = ['Chords & Strumming', 'Lead & Scales', 'Technique', 'Theory & Songwriting'];
+
+const STRUM_MAJOR = [
+  { pattern: 'D · D · DU · UDU', feel: 'Classic pop/rock feel — steady quarter notes with an eighth-note lift before beat 4.' },
+  { pattern: 'D · DU · UDU', feel: 'Folky and open — leaves space, good for letting chords ring.' },
+  { pattern: 'D · D · U · D', feel: 'Simple driving four-on-the-floor — good for building speed on the changes.' },
+  { pattern: 'DU · X · DU · X', feel: 'Percussive — mute the strings on the "X" for a tight, chunky groove.' },
+  { pattern: 'D · DUDU · D ·', feel: 'Upbeat and syncopated — the fast middle strums add energy.' },
+];
+const STRUM_MINOR = [
+  { pattern: 'D · · D · U ·', feel: 'Slow and moody — lots of space, let each chord breathe.' },
+  { pattern: 'D · DU · · DU', feel: 'Rolling and atmospheric — good for a ballad feel.' },
+  { pattern: 'D · D · UDU ·', feel: 'A little tension in the middle, resolves on the downbeat.' },
+  { pattern: 'DUD · · UDU ·', feel: 'Fingerstyle-adjacent — try it soft, almost whispered.' },
+];
+const STRUM_BLUES = [
+  { pattern: 'D · · D DU ·', feel: 'Shuffle feel — swing the eighth notes instead of playing them straight.' },
+  { pattern: 'D DU · D DU ·', feel: 'Classic 12-bar shuffle groove — lean into the triplet swing.' },
+  { pattern: 'D · U D · U ·', feel: 'Laid-back blues shuffle — keep the wrist loose and relaxed.' },
+];
+
+function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function buildProgression(){
+  const roll = Math.random();
+  let type, keyName, degreeMap, template;
+  if(roll < 0.4){ type='major'; keyName=pickRandom(Object.keys(MAJOR_KEYS)); degreeMap=MAJOR_KEYS[keyName]; template=pickRandom(MAJOR_PROGRESSIONS); }
+  else if(roll < 0.75){ type='minor'; keyName=pickRandom(Object.keys(MINOR_KEYS)); degreeMap=MINOR_KEYS[keyName]; template=pickRandom(MINOR_PROGRESSIONS); }
+  else { type='blues'; keyName=pickRandom(Object.keys(BLUES_KEYS)); degreeMap=BLUES_KEYS[keyName]; template=pickRandom(BLUES_PROGRESSIONS); }
+  const chordNames = template.map(d => degreeMap[d]);
+  return { type, keyName, template, chordNames };
+}
+function pentatonicInfo(prog){
+  let root;
+  if(prog.type==='major') root = REL_MINOR_ROOT[prog.keyName];
+  else if(prog.type==='minor') root = MINOR_TONIC_ROOT[prog.keyName];
+  else root = prog.keyName;
+  return { root, fret: NOTE_ORDER.indexOf(root) };
+}
+function chordSVG(name){
+  const c = CHORDS[name]; if(!c) return '';
+  const frets = c.frets;
+  const nums = frets.filter(f => typeof f === 'number' && f > 0);
+  const minFret = nums.length ? Math.min(...nums) : 0;
+  const baseFret = minFret > 1 ? minFret : 1;
+  const rows = 4, cellW = 13, cellH = 16, marginL = 16, marginT = 22;
+  let svg = `<svg viewBox="0 0 ${marginL+cellW*5+10} ${marginT+cellH*rows+10}" width="76" height="${Math.round(76*(marginT+cellH*rows+10)/(marginL+cellW*5+10))}" class="chord-svg">`;
+  if(baseFret === 1){ svg += `<rect x="${marginL-1}" y="${marginT-3}" width="${cellW*5+2}" height="3" rx="1" fill="#ede1cb"/>`; }
+  else { svg += `<text x="1" y="${marginT+9}" font-size="9" fill="#e4c567" font-family="monospace">${baseFret}fr</text>`; }
+  for(let s=0;s<6;s++){ const x = marginL + cellW*s; svg += `<line x1="${x}" y1="${marginT}" x2="${x}" y2="${marginT+cellH*rows}" stroke="#7a6a52" stroke-width="1"/>`; }
+  for(let r=0;r<=rows;r++){ const y = marginT + cellH*r; svg += `<line x1="${marginL}" y1="${y}" x2="${marginL+cellW*5}" y2="${y}" stroke="#7a6a52" stroke-width="1"/>`; }
+  frets.forEach((f,i) => {
+    const x = marginL + cellW*i;
+    if(f === 'x'){ svg += `<text x="${x-3}" y="${marginT-7}" font-size="9" fill="#a2472b" font-family="monospace">x</text>`; }
+    else if(f === 0){ svg += `<text x="${x-3}" y="${marginT-7}" font-size="9" fill="#ede1cb" font-family="monospace">o</text>`; }
+    else { const row = f - baseFret + 1; const y = marginT + cellH*(row-1) + cellH/2; svg += `<circle cx="${x}" cy="${y}" r="5" fill="#c9a227"/>`; }
+  });
+  svg += `</svg>`;
+  return svg;
+}
+function timeBudget(total){
+  const warmup = Math.min(5, Math.max(2, Math.round(total*0.12)));
+  const cooldown = Math.min(5, Math.max(2, Math.round(total*0.12)));
+  let mainTotal = total - warmup - cooldown;
+  if(mainTotal < 5) mainTotal = Math.max(3, total - warmup);
+  let spotlight, others;
+  if(mainTotal <= 8){ spotlight = mainTotal; others = 0; }
+  else { spotlight = Math.round(mainTotal*0.45); others = Math.max(2, Math.round((mainTotal-spotlight)/3)); }
+  return { warmup, cooldown, spotlight, others };
+}
+function romanLabel(prog){ return prog.template.join(' – '); }
+function strumForProgression(prog){
+  if(prog.type==='minor') return pickRandom(STRUM_MINOR);
+  if(prog.type==='blues') return pickRandom(STRUM_BLUES);
+  return pickRandom(STRUM_MAJOR);
+}
+
+function gtRender(minutes){
+  const results = document.getElementById('gt-results');
+  const spotlightIdx = Number(localStorage.getItem('woodshed_focus_idx') || 0);
+  const spotlight = FOCUS_ORDER[spotlightIdx];
+  const nextIdx = (spotlightIdx + 1) % FOCUS_ORDER.length;
+  localStorage.setItem('woodshed_focus_idx', nextIdx);
+  localStorage.setItem('woodshed_minutes', minutes);
+
+  const prog = buildProgression();
+  const penta = pentatonicInfo(prog);
+  const budget = timeBudget(minutes);
+  const warmup = pickRandom(WARMUPS);
+  const technique = pickRandom(TECHNIQUES);
+  const theory = pickRandom(THEORY);
+  const cooldownFn = pickRandom(COOLDOWN_TEMPLATES);
+  const cooldownText = cooldownFn(prog.chordNames, penta);
+  const strum = strumForProgression(prog);
+
+  const spotlightMins = {};
+  const otherKeys = FOCUS_ORDER.filter(f => f !== spotlight);
+  otherKeys.forEach(k => { spotlightMins[k] = budget.others; });
+  spotlightMins[spotlight] = budget.spotlight;
+
+  const chordRow = prog.chordNames.map(name => {
+    const c = CHORDS[name];
+    const noteHtml = c.note ? `<div class="fingering-note">${c.note}</div>` : '';
+    return `<div class="chord-item">${chordSVG(name)}<span class="name">${name}</span>${noteHtml}</div>`;
+  }).join('');
+
+  const showOthers = budget.others > 0;
+
+  results.innerHTML = `
+    <div class="badge">Today's spotlight: ${spotlight}</div>
+    <div class="gcard">
+      <div class="card-head"><h2>Warm Up</h2><span class="mins">${budget.warmup} min</span></div>
+      <p><strong>${warmup.title}.</strong> ${warmup.text}</p>
+    </div>
+    <div class="gcard ${spotlight==='Chords & Strumming' ? 'spotlight' : ''}">
+      <div class="card-head"><h2>Today's Progression</h2><span class="mins">${spotlightMins['Chords & Strumming']} min</span></div>
+      <div class="key-line">${prog.type === 'blues' ? 'Blues in' : prog.type === 'minor' ? 'Minor key' : 'Major key'} ${prog.keyName} &nbsp;·&nbsp; ${romanLabel(prog)}</div>
+      <div class="chord-row">${chordRow}</div>
+      <p class="detail" style="margin-top:12px;">Loop it slow with a metronome first, then bring in the strum below once the changes feel automatic.</p>
+      <div class="key-line" style="margin-top:10px; margin-bottom:2px;">Strum idea: ${strum.pattern}</div>
+      <p class="detail">${strum.feel} <span style="opacity:.75;">(D = down, U = up, · = skip)</span></p>
+    </div>
+    ${showOthers || spotlight==='Lead & Scales' ? `
+    <div class="gcard ${spotlight==='Lead & Scales' ? 'spotlight' : ''}">
+      <div class="card-head"><h2>Lead &amp; Scale Work</h2><span class="mins">${spotlightMins['Lead & Scales']} min</span></div>
+      <p><strong>${penta.root} minor pentatonic — Box 1</strong>, rooted at fret ${penta.fret} on the low E string${penta.fret===0 ? ' (open position)' : ''}.</p>
+      <p class="detail">Play it ascending and descending three times slow, then three times against a click at 80–100 bpm. Alternate pick every note.</p>
+    </div>` : ''}
+    ${showOthers || spotlight==='Technique' ? `
+    <div class="gcard ${spotlight==='Technique' ? 'spotlight' : ''}">
+      <div class="card-head"><h2>Technique Drill</h2><span class="mins">${spotlightMins['Technique']} min</span></div>
+      <p><strong>${technique.title}.</strong> ${technique.text}</p>
+    </div>` : ''}
+    <div class="gcard">
+      <div class="card-head"><h2>Play It Out</h2><span class="mins">${budget.cooldown} min</span></div>
+      <p>${cooldownText}</p>
+    </div>
+    ${showOthers || spotlight==='Theory & Songwriting' ? `
+    <div class="gcard theory-card ${spotlight==='Theory & Songwriting' ? 'spotlight' : ''}">
+      <div class="card-head"><h2>Ear &amp; Theory</h2><span class="mins">${spotlightMins['Theory & Songwriting']} min</span></div>
+      <p>${theory}</p>
+    </div>` : ''}
+  `;
+}
+
+const gtInput = document.getElementById('gt-customMinutes');
+const gtSaved = localStorage.getItem('woodshed_minutes');
+if(gtSaved) gtInput.value = gtSaved;
+
+document.querySelectorAll('#gt-presetRow .gchip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#gt-presetRow .gchip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    gtInput.value = btn.dataset.min;
+  });
+});
+gtInput.addEventListener('input', () => {
+  document.querySelectorAll('#gt-presetRow .gchip').forEach(b => b.classList.remove('active'));
+});
+document.getElementById('gt-generateBtn').addEventListener('click', () => {
+  let minutes = parseInt(gtInput.value, 10);
+  if(!minutes || minutes < 5) minutes = 20;
+  gtRender(minutes);
+});
+gtRender(parseInt(gtInput.value,10) || 20);
+})();
+</script>
+
+<!-- ========================================================= -->
+<!-- BRAIN GAMES LOGIC                                          -->
+<!-- ========================================================= -->
+<script>
+(function(){
+const menu = document.getElementById('br-menu');
+const gameWrap = document.getElementById('br-game');
+const gameBody = document.getElementById('br-game-body');
+const backBtn = document.getElementById('br-backBtn');
+const GAMES = ['memory','word','math','reaction','pattern'];
+
+function getBest(key){ try{return localStorage.getItem(key);}catch(e){return null;} }
+function setBest(key,val){ try{localStorage.setItem(key,val);}catch(e){} }
+
+function refreshBestLabels(){
+  const m = getBest('br_memory_best'); document.getElementById('br-best-memory').textContent = m ? `Best: ${m} moves` : '';
+  const w = getBest('br_word_best'); document.getElementById('br-best-word').textContent = w ? `Best streak: ${w}` : '';
+  const ma = getBest('br_math_best'); document.getElementById('br-best-math').textContent = ma ? `Best: ${ma} correct` : '';
+  const r = getBest('br_reaction_best'); document.getElementById('br-best-reaction').textContent = r ? `Best: ${r} ms` : '';
+  const p = getBest('br_pattern_best'); document.getElementById('br-best-pattern').textContent = p ? `Best streak: ${p}` : '';
+}
+
+function showMenu(){ menu.style.display='grid'; gameWrap.style.display='none'; refreshBestLabels(); }
+function showGame(name){ menu.style.display='none'; gameWrap.style.display='block'; launch(name); }
+
+menu.addEventListener('click', e=>{
+  const tile = e.target.closest('.br-tile'); if(!tile) return;
+  showGame(tile.dataset.game);
+});
+document.getElementById('br-mixBtn').addEventListener('click', ()=>{
+  showGame(GAMES[Math.floor(Math.random()*GAMES.length)]);
+});
+backBtn.addEventListener('click', showMenu);
+
+function launch(name){
+  if(name==='memory') memoryGame();
+  else if(name==='word') wordGame();
+  else if(name==='math') mathGame();
+  else if(name==='reaction') reactionGame();
+  else if(name==='pattern') patternGame();
+}
+
+/* ---------- MEMORY MATCH ---------- */
+function memoryGame(){
+  const EMOJI = ['🎸','🏀','🏂','🛹','🌊','🧠'];
+  let deck = shuffleArr(EMOJI.concat(EMOJI)).map((e,i)=>({id:i, emoji:e, flipped:false, matched:false}));
+  let firstPick = null, moves = 0, lock = false, matchedCount = 0;
+
+  function paint(){
+    gameBody.innerHTML = `
+      <h2>Memory Match</h2>
+      <p class="stat">Moves: <span id="mm-moves">${moves}</span> · Pairs found: ${matchedCount}/6</p>
+      <div class="br-grid" id="mm-grid"></div>
+    `;
+    const grid = document.getElementById('mm-grid');
+    deck.forEach(card=>{
+      const el = document.createElement('div');
+      el.className = 'br-mcard' + (card.flipped||card.matched ? ' flipped':'') + (card.matched ? ' matched':'');
+      el.textContent = (card.flipped||card.matched) ? card.emoji : '';
+      el.addEventListener('click', ()=>flip(card.id));
+      grid.appendChild(el);
+    });
+  }
+  function flip(id){
+    if(lock) return;
+    const card = deck.find(c=>c.id===id);
+    if(card.flipped || card.matched) return;
+    card.flipped = true;
+    if(!firstPick){ firstPick = card; paint(); return; }
+    moves++;
+    if(firstPick.emoji === card.emoji){
+      firstPick.matched = true; card.matched = true;
+      matchedCount++;
+      firstPick = null;
+      paint();
+      if(matchedCount===6){
+        const best = getBest('br_memory_best');
+        if(!best || moves < Number(best)) setBest('br_memory_best', moves);
+        setTimeout(()=>{
+          gameBody.innerHTML += `<p class="br-feedback good">Solved in ${moves} moves! ${(!best||moves<Number(best))?'New best.':''}</p>
+            <button class="br-btn" id="mm-again">Play again</button>`;
+          document.getElementById('mm-again').addEventListener('click', memoryGame);
+        }, 200);
+      }
+    } else {
+      lock = true;
+      paint();
+      setTimeout(()=>{ firstPick.flipped=false; card.flipped=false; firstPick=null; lock=false; paint(); }, 700);
+    }
+  }
+  paint();
+}
+
+/* ---------- WORD SCRAMBLE ---------- */
+function wordGame(){
+  const WORDS = ['GUITAR','CHORD','WORKOUT','BALANCE','REACTION','MEMORY','PATTERN','STRENGTH','CARDIO','MELODY','RHYTHM','FOCUS','STAMINA','POWDER','CARVING','PADDLE','DRIBBLE','SPRINT','STRETCH','TUNING'];
+  let streak = 0;
+  let current, scrambled;
+
+  function scramble(word){
+    let s;
+    do{ s = shuffleArr(word.split('')).join(''); } while(s===word);
+    return s;
+  }
+  function next(){
+    current = WORDS[Math.floor(Math.random()*WORDS.length)];
+    scrambled = scramble(current);
+    paint('');
+  }
+  function paint(feedback, feedbackClass){
+    gameBody.innerHTML = `
+      <h2>Word Scramble</h2>
+      <p class="stat">Streak: ${streak}</p>
+      <div class="br-scramble">${scrambled}</div>
+      <div class="br-row">
+        <input type="text" id="ws-input" placeholder="Your guess" autocomplete="off" autocapitalize="characters">
+        <button class="br-btn" id="ws-check">Check</button>
+      </div>
+      <div class="br-row" style="margin-top:8px;">
+        <button class="br-btn ghost" id="ws-skip" style="flex:1;">Skip / reveal</button>
+      </div>
+      <p class="br-feedback ${feedbackClass||''}">${feedback||''}</p>
+    `;
+    const input = document.getElementById('ws-input');
+    input.focus();
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter') check(); });
+    document.getElementById('ws-check').addEventListener('click', check);
+    document.getElementById('ws-skip').addEventListener('click', ()=>{
+      streak = 0;
+      const answer = current;
+      next();
+      gameBody.querySelector('.br-feedback').textContent = `Answer was ${answer}.`;
+    });
+  }
+  function check(){
+    const val = document.getElementById('ws-input').value.trim().toUpperCase();
+    if(val === current){
+      streak++;
+      const best = getBest('br_word_best');
+      if(!best || streak > Number(best)) setBest('br_word_best', streak);
+      const prevWord = current;
+      next();
+      gameBody.querySelector('.br-feedback').className = 'br-feedback good';
+      gameBody.querySelector('.br-feedback').textContent = `Correct — ${prevWord}! Streak: ${streak}`;
+    } else {
+      gameBody.querySelector('.br-feedback').className = 'br-feedback bad';
+      gameBody.querySelector('.br-feedback').textContent = 'Not quite — try again.';
+    }
+  }
+  next();
+}
+
+/* ---------- QUICK MATH ---------- */
+function mathGame(){
+  let score = 0, timeLeft = 60, timerId, a, b, op, answer;
+
+  function newProblem(){
+    const ops = ['+','−','×'];
+    op = ops[Math.floor(Math.random()*ops.length)];
+    if(op==='+'){ a=rand(2,60); b=rand(2,60); answer=a+b; }
+    else if(op==='−'){ a=rand(5,60); b=rand(1,a); answer=a-b; }
+    else { a=rand(2,12); b=rand(2,12); answer=a*b; }
+  }
+  function paint(){
+    gameBody.innerHTML = `
+      <h2>Quick Math</h2>
+      <p class="br-timer">Time left: <span id="qm-time">${timeLeft}</span>s · Score: ${score}</p>
+      <div class="br-math-problem">${a} ${op} ${b} = ?</div>
+      <div class="br-row"><input type="number" id="qm-input" inputmode="numeric" placeholder="Answer"><button class="br-btn" id="qm-submit">Go</button></div>
+      <p class="br-feedback" id="qm-feedback"></p>
+    `;
+    const input = document.getElementById('qm-input');
+    input.focus();
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter') submit(); });
+    document.getElementById('qm-submit').addEventListener('click', submit);
+  }
+  function submit(){
+    const val = parseInt(document.getElementById('qm-input').value,10);
+    const fb = document.getElementById('qm-feedback');
+    if(val===answer){ score++; fb.className='br-feedback good'; fb.textContent='Correct!'; }
+    else { fb.className='br-feedback bad'; fb.textContent=`Nope — it was ${answer}.`; }
+    newProblem();
+    paint();
+    document.getElementById('qm-feedback').className = fb.className;
+    document.getElementById('qm-feedback').textContent = fb.textContent;
+  }
+  function tick(){
+    timeLeft--;
+    const el = document.getElementById('qm-time');
+    if(el) el.textContent = timeLeft;
+    if(timeLeft<=0){
+      clearInterval(timerId);
+      const best = getBest('br_math_best');
+      const isBest = !best || score > Number(best);
+      if(isBest) setBest('br_math_best', score);
+      gameBody.innerHTML = `
+        <h2>Quick Math</h2>
+        <p class="stat">Time's up! Final score: ${score} ${isBest?'— new best!':''}</p>
+        <button class="br-btn" id="qm-again">Play again</button>
+      `;
+      document.getElementById('qm-again').addEventListener('click', mathGame);
+    }
+  }
+  newProblem();
+  paint();
+  timerId = setInterval(tick, 1000);
+}
+
+/* ---------- REACTION TAP ---------- */
+function reactionGame(){
+  let state = 'idle', startTime, timeoutId;
+  function paint(){
+    gameBody.innerHTML = `
+      <h2>Reaction Tap</h2>
+      <p class="stat">Tap when it turns green. Too soon and you start over.</p>
+      <div class="br-reactzone" id="rt-zone">Tap to start</div>
+      <p class="br-feedback" id="rt-feedback"></p>
+    `;
+    document.getElementById('rt-zone').addEventListener('click', onZoneClick);
+  }
+  function onZoneClick(){
+    const zone = document.getElementById('rt-zone');
+    if(state==='idle'){
+      state='waiting';
+      zone.className='br-reactzone wait';
+      zone.textContent='Wait for green...';
+      const delay = 1200 + Math.random()*2800;
+      timeoutId = setTimeout(()=>{
+        state='go';
+        startTime = performance.now();
+        zone.className='br-reactzone go';
+        zone.textContent='TAP NOW!';
+      }, delay);
+    } else if(state==='waiting'){
+      clearTimeout(timeoutId);
+      state='idle';
+      zone.className='br-reactzone';
+      zone.textContent='Too soon! Tap to try again';
+      document.getElementById('rt-feedback').className='br-feedback bad';
+      document.getElementById('rt-feedback').textContent='Jumped the gun — wait for green next time.';
+    } else if(state==='go'){
+      const reaction = Math.round(performance.now() - startTime);
+      state='idle';
+      const best = getBest('br_reaction_best');
+      const isBest = !best || reaction < Number(best);
+      if(isBest) setBest('br_reaction_best', reaction);
+      zone.className='br-reactzone';
+      zone.textContent='Tap to try again';
+      document.getElementById('rt-feedback').className='br-feedback good';
+      document.getElementById('rt-feedback').textContent = `${reaction} ms ${isBest?'— new best!':''}`;
+    }
+  }
+  paint();
+}
+
+/* ---------- PATTERN LOGIC ---------- */
+function patternGame(){
+  let streak = 0;
+  function makePuzzle(){
+    const kinds = ['arith','geom','alt','square'];
+    const kind = kinds[Math.floor(Math.random()*kinds.length)];
+    let seq = [];
+    if(kind==='arith'){
+      const start = rand(1,20), step = rand(2,9);
+      for(let i=0;i<5;i++) seq.push(start+step*i);
+    } else if(kind==='geom'){
+      const start = rand(1,4), ratio = rand(2,3);
+      for(let i=0;i<5;i++) seq.push(start*Math.pow(ratio,i));
+    } else if(kind==='alt'){
+      const start = rand(1,15), up = rand(3,8), down = rand(1,3);
+      let v = start;
+      seq.push(v);
+      for(let i=1;i<5;i++){ v = i%2===1 ? v+up : v-down; seq.push(v); }
+    } else {
+      for(let i=1;i<=5;i++) seq.push(i*i);
+    }
+    const answer = seq[4];
+    const shown = seq.slice(0,4);
+    const distractors = new Set();
+    while(distractors.size<3){
+      const d = answer + rand(-6,6) * (rand(0,1)?1:-1) || answer+rand(1,6);
+      if(d!==answer && d>=0) distractors.add(d);
+    }
+    const options = shuffleArr([answer, ...Array.from(distractors)]);
+    return { shown, answer, options };
+  }
+  let puzzle;
+  function paint(){
+    gameBody.innerHTML = `
+      <h2>Pattern Logic</h2>
+      <p class="stat">Streak: ${streak}</p>
+      <div class="br-sequence">${puzzle.shown.join('  ·  ')}  ·  ?</div>
+      <div class="br-options" id="pl-options"></div>
+      <p class="br-feedback" id="pl-feedback"></p>
+    `;
+    const opts = document.getElementById('pl-options');
+    puzzle.options.forEach(o=>{
+      const b = document.createElement('button');
+      b.className = 'br-opt';
+      b.textContent = o;
+      b.addEventListener('click', ()=>choose(o,b));
+      opts.appendChild(b);
+    });
+  }
+  function choose(val, btn){
+    document.querySelectorAll('#pl-options .br-opt').forEach(b=>b.disabled=true);
+    const fb = document.getElementById('pl-feedback');
+    if(val===puzzle.answer){
+      streak++;
+      btn.classList.add('correct');
+      const best = getBest('br_pattern_best');
+      if(!best || streak > Number(best)) setBest('br_pattern_best', streak);
+      fb.className='br-feedback good'; fb.textContent='Correct!';
+    } else {
+      streak = 0;
+      btn.classList.add('wrong');
+      fb.className='br-feedback bad'; fb.textContent=`Not quite — it was ${puzzle.answer}.`;
+    }
+    setTimeout(()=>{ puzzle = makePuzzle(); paint(); }, 1100);
+  }
+  puzzle = makePuzzle();
+  paint();
+}
+
+/* ---------- shared helpers ---------- */
+function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function shuffleArr(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+refreshBestLabels();
+})();
 </script>
 </body>
 </html>
